@@ -206,6 +206,7 @@ const StudentHomePage = () => {
               <HomeRoomCard
                 roomNumber={roomData.roomNumber || ""}
                 buildingName={roomData.buildingName || ""}
+                onClick={() => router.push("/sinh-vien/phong")}
               />
             ) : (
               <HomeRoomCard
@@ -354,7 +355,7 @@ const StudentHomePage = () => {
           footer={null}
         >
           <MaintenanceRequestForm
-            studentId={user?.id}
+            studentId={user?.profile?.id}
             roomId={roomData?.roomId}
             onSuccess={handleMaintenanceSubmit}
           />

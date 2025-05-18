@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Descriptions, Button, Tag, Typography } from "antd";
 import { HomeOutlined } from "@ant-design/icons";
 import { Dormitory } from "@/types/student";
+import { useRouter } from "next/navigation";
 
 const { Text } = Typography;
 
@@ -16,6 +17,7 @@ interface RoomCardProps {
  */
 const RoomCard: React.FC<RoomCardProps> = ({ roomData, onRegisterRoom }) => {
   // Hàm lấy màu cho tag trạng thái
+  const router = useRouter();
   const getStatusColor = (status: string) => {
     const statusColors: Record<string, string> = {
       active: "success",
@@ -24,6 +26,10 @@ const RoomCard: React.FC<RoomCardProps> = ({ roomData, onRegisterRoom }) => {
       maintenance: "processing",
     };
     return statusColors[status] || "default";
+  };
+
+  const handleDetailRoom = () => {
+    router.push(`/sinh-vien/phong`);
   };
 
   return (
@@ -40,7 +46,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ roomData, onRegisterRoom }) => {
       }}
       extra={
         roomData ? (
-          <Button type="link" style={{ color: "#fa8c16" }}>
+          <Button type="link" style={{ color: "#fa8c16" }} onClick={handleDetailRoom}>
             Chi tiết
           </Button>
         ) : null

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Layout,
   Typography,
@@ -16,6 +16,7 @@ import {
   Descriptions,
   Button,
   Tag,
+  Timeline,
 } from "antd";
 import {
   FileTextOutlined,
@@ -23,10 +24,15 @@ import {
   ClockCircleOutlined,
   CheckCircleOutlined,
   InfoCircleOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
-import { useAuth } from "@/contexts/AuthContext";
 import contractApi from "@/api/contract";
 import { Contract } from "@/types/student";
+import { useStudent } from "@/contexts/StudentContext";
+import ContractPreview from "@/components/molecules/ContractPreview";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import studentApi from "@/api/student";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -37,33 +43,55 @@ const { TabPane } = Tabs;
  * Hiển thị danh sách hợp đồng, chi tiết hợp đồng, lịch sử hợp đồng
  */
 const ContractPage: React.FC = () => {
-  const { user } = useAuth() as any;
+  const { studentData } = useStudent();
   const [loading, setLoading] = useState(true);
   const [contracts, setContracts] = useState<Contract[]>([]);
+  console.log("contracts", contracts)
   const [selectedContract, setSelectedContract] = useState<Contract | null>(
     null
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [allTimelineData, setAllTimelineData] = useState<any[]>([]);
+  const [allTimelineLoading, setAllTimelineLoading] = useState(false);
+  const contractRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const fetchContracts = async () => {
       try {
         setLoading(true);
-        if (user?.id) {
+        setAllTimelineLoading(true);
+        if (studentData?.id) {
           // Fetch contracts for the student
-          const response = await contractApi.getContractsByStudent(user.id);
+          const response = await contractApi.getContractsByStudent(studentData.id);
           setContracts(response.data || []);
+
+       
         }
       } catch (error) {
         console.error("Error fetching contracts:", error);
         message.error("Không thể tải thông tin hợp đồng");
       } finally {
         setLoading(false);
+        setAllTimelineLoading(false);
       }
     };
 
     fetchContracts();
-  }, [user]);
+  }, [studentData]);
+  useEffect(() => {
+    const fetchTimeline = async () => {
+      if(contracts){
+       
+          const timelineResponse = await studentApi.getActivityLogs('contract', contracts[0]?.roomId);
+         
+          const sortedTimeline = timelineResponse.data.data.logs.sort(
+            (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          setAllTimelineData(sortedTimeline || []);
+      }
+    }
+    fetchTimeline();
+  }, [contracts])
 
   const handleViewContractDetail = async (contractId: number) => {
     try {
@@ -75,6 +103,33 @@ const ContractPage: React.FC = () => {
     } catch (error) {
       console.error("Error fetching contract details:", error);
       message.error("Không thể tải chi tiết hợp đồng");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadContract = async () => {
+    if (!contractRef.current || !selectedContract) return;
+
+    try {
+      setLoading(true);
+      const canvas = await html2canvas(contractRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgWidth, imgHeight);
+      
+      pdf.save(`hop-dong-${selectedContract.contractNumber}.pdf`);
+      message.success('Tải hợp đồng thành công!');
+    } catch (error) {
+      console.error('Error downloading contract:', error);
+      message.error('Không thể tải hợp đồng. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -147,6 +202,32 @@ const ContractPage: React.FC = () => {
     </Card>
   );
 
+  const getTimelineItemColor = (action: string) => {
+    switch (action) {
+      case 'create':
+        return 'green';
+      case 'update':
+        return 'blue';
+      case 'delete':
+        return 'red';
+      case 'status_change':
+        return 'orange';
+      default:
+        return 'gray';
+    }
+  };
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
       <Content style={{ padding: "20px" }}>
@@ -186,21 +267,37 @@ const ContractPage: React.FC = () => {
               <TabPane
                 tab={
                   <span>
-                    <InfoCircleOutlined /> Hợp đồng cũ
+                    <InfoCircleOutlined /> Lịch sử
                   </span>
                 }
                 key="expired"
               >
-                {expiredContracts.length > 0 ? (
-                  expiredContracts.map((contract) => (
-                    <ContractItem key={contract.id} contract={contract} />
-                  ))
-                ) : (
-                  <Empty
-                    description="Bạn không có hợp đồng cũ"
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  />
-                )}
+                <Card title="Lịch sử hoạt động">
+                  {allTimelineLoading ? (
+                    <div style={{ textAlign: "center", padding: "20px 0" }}>
+                      <Spin />
+                    </div>
+                  ) : allTimelineData.length > 0 ? (
+                    <Timeline>
+                      {allTimelineData.map((item) => (
+                        <Timeline.Item
+                          key={item.id}
+                          color={getTimelineItemColor(item.action)}
+                        >
+                          <div>
+                            <strong>{item.userName}</strong>
+                            <p>{item.description}</p>
+                            <p style={{ fontSize: '12px', color: '#888' }}>
+                              {formatTimestamp(item.createdAt)}
+                            </p>
+                          </div>
+                        </Timeline.Item>
+                      ))}
+                    </Timeline>
+                  ) : (
+                    <Empty description="Không có lịch sử hoạt động" />
+                  )}
+                </Card>
               </TabPane>
             </Tabs>
           </Card>
@@ -211,6 +308,9 @@ const ContractPage: React.FC = () => {
           open={isModalVisible}
           onCancel={() => setIsModalVisible(false)}
           footer={[
+            <Button key="preview" onClick={() => setIsPreviewVisible(true)}>
+              Xem hợp đồng
+            </Button>,
             <Button key="close" onClick={() => setIsModalVisible(false)}>
               Đóng
             </Button>,
@@ -218,53 +318,138 @@ const ContractPage: React.FC = () => {
               key="download"
               type="primary"
               style={{ background: "#fa8c16", borderColor: "#fa8c16" }}
+              onClick={handleDownloadContract}
+              loading={loading}
             >
               <FilePdfOutlined /> Tải hợp đồng
             </Button>,
           ]}
-          width={700}
+          width={800}
         >
-          {selectedContract ? (
-            <Descriptions column={1} bordered>
-              <Descriptions.Item label="Mã hợp đồng">
-                {selectedContract.contractNumber}
-              </Descriptions.Item>
-              <Descriptions.Item label="Ngày bắt đầu">
-                {selectedContract.startDate
-                  ? new Date(selectedContract.startDate).toLocaleDateString(
-                      "vi-VN"
-                    )
-                  : ""}
-              </Descriptions.Item>
-              <Descriptions.Item label="Ngày kết thúc">
-                {selectedContract.endDate
-                  ? new Date(selectedContract.endDate).toLocaleDateString(
-                      "vi-VN"
-                    )
-                  : ""}
-              </Descriptions.Item>
-              <Descriptions.Item label="Tiền đặt cọc">
-                {selectedContract.depositAmount?.toLocaleString("vi-VN")} VNĐ
-              </Descriptions.Item>
-              <Descriptions.Item label="Phí hàng tháng">
-                {selectedContract.monthlyFee?.toLocaleString("vi-VN")} VNĐ
-              </Descriptions.Item>
-              <Descriptions.Item label="Trạng thái">
-                <Tag color={getStatusColor(selectedContract.status || "")}>
-                  {getStatusText(selectedContract.status || "")}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Ngày tạo">
-                {selectedContract.createdAt
-                  ? new Date(selectedContract.createdAt).toLocaleDateString(
-                      "vi-VN"
-                    )
-                  : ""}
-              </Descriptions.Item>
-            </Descriptions>
-          ) : (
-            <Spin />
-          )}
+          <Tabs defaultActiveKey="info">
+            <TabPane
+              tab={
+                <span>
+                  <InfoCircleOutlined /> Thông tin
+                </span>
+              }
+              key="info"
+            >
+              {selectedContract ? (
+                <Descriptions column={1} bordered>
+                  <Descriptions.Item label="Mã hợp đồng">
+                    {selectedContract.contractNumber}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Ngày bắt đầu">
+                    {selectedContract.startDate
+                      ? new Date(selectedContract.startDate).toLocaleDateString(
+                          "vi-VN"
+                        )
+                      : ""}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Ngày kết thúc">
+                    {selectedContract.endDate
+                      ? new Date(selectedContract.endDate).toLocaleDateString(
+                          "vi-VN"
+                        )
+                      : ""}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Tiền đặt cọc">
+                    {selectedContract.depositAmount?.toLocaleString("vi-VN")} VNĐ
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Phí hàng tháng">
+                    {selectedContract.monthlyFee?.toLocaleString("vi-VN")} VNĐ
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Trạng thái">
+                    <Tag color={getStatusColor(selectedContract.status || "")}>
+                      {getStatusText(selectedContract.status || "")}
+                    </Tag>
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Ngày tạo">
+                    {selectedContract.createdAt
+                      ? new Date(selectedContract.createdAt).toLocaleDateString(
+                          "vi-VN"
+                        )
+                      : ""}
+                  </Descriptions.Item>
+                </Descriptions>
+              ) : (
+                <Spin />
+              )}
+            </TabPane>
+            <TabPane
+              tab={
+                <span>
+                  <HistoryOutlined /> Lịch sử hoạt động
+                </span>
+              }
+              key="timeline"
+            >
+              {allTimelineLoading ? (
+                <div style={{ textAlign: "center", padding: "20px 0" }}>
+                  <Spin />
+                </div>
+              ) : allTimelineData.length > 0 ? (
+                <Timeline>
+                  {allTimelineData.map((item) => (
+                    <Timeline.Item
+                      key={item.id}
+                      color={getTimelineItemColor(item.action)}
+                    >
+                      <div>
+                        <strong>{item.userName}</strong>
+                        <p>{item.description}</p>
+                        <p style={{ fontSize: '12px', color: '#888' }}>
+                          {formatTimestamp(item.createdAt)}
+                        </p>
+                      </div>
+                    </Timeline.Item>
+                  ))}
+                </Timeline>
+              ) : (
+                <Empty description="Không có lịch sử hoạt động" />
+              )}
+            </TabPane>
+          </Tabs>
+        </Modal>
+
+        <Modal
+          title="Xem trước hợp đồng"
+          open={isPreviewVisible}
+          onCancel={() => setIsPreviewVisible(false)}
+          width={800}
+          footer={[
+            <Button key="close" onClick={() => setIsPreviewVisible(false)}>
+              Đóng
+            </Button>,
+            <Button
+              key="download"
+              type="primary"
+              onClick={handleDownloadContract}
+              loading={loading}
+              style={{ background: "#fa8c16", borderColor: "#fa8c16" }}
+            >
+              <FilePdfOutlined /> Tải hợp đồng
+            </Button>,
+          ]}
+        >
+          <div ref={contractRef}>
+            {selectedContract && studentData && (
+              <ContractPreview
+                contractData={{
+                  contractNumber: selectedContract.contractNumber || '',
+                  studentName: studentData.fullName || '',
+                  studentId: studentData.studentId || '',
+                  roomNumber: selectedContract.roomNumber || '',
+                  buildingName: selectedContract.buildingName || '',
+                  startDate: selectedContract.startDate || '',
+                  endDate: selectedContract.endDate || '',
+                  depositAmount: selectedContract.depositAmount || 0,
+                  monthlyFee: selectedContract.monthlyFee || 0,
+                }}
+              />
+            )}
+          </div>
         </Modal>
       </Content>
     </Layout>

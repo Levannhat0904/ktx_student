@@ -29,6 +29,11 @@ interface StudentRegistrationResponse {
     id: number;
   };
 }
+interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
 
 interface StudentListResponse {
   success: boolean;
@@ -250,6 +255,13 @@ const studentApi = {
       console.error('Error canceling maintenance request:', error);
       throw error;
     }
+  },
+  getActivityLogs: async (entityType: string, entityId?: number): Promise<ApiResponse<any>> => {
+    const params = {
+      entityType,
+      entityId
+    };
+    return axiosClient.get('/api/activity-logs', { params });
   },
 };
 export const useActiveStudent = (studentId: string) => {

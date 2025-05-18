@@ -61,6 +61,12 @@ export interface Student {
   // Ảnh chân dung
   avatarPath?: string;
   status?: StudentStatusEnum;
+
+  studentId?: string;
+  dateOfBirth?: string;
+  avatar?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Dormitory {
@@ -85,6 +91,8 @@ export interface Contract {
   contractNumber?: string;
   studentId?: number;
   roomId?: number;
+  roomNumber?: string;
+  buildingName?: string;
   startDate?: string;
   endDate?: string;
   depositAmount?: number;

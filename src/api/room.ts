@@ -1,6 +1,6 @@
 import axiosClient from './axiosClient';
 import { AxiosRequestConfig } from 'axios';
-const API_URL = 'http://localhost:3000/api';
+
 export interface RoomFilters {
   buildingName?: string;
   type?: 'male' | 'female';
@@ -142,17 +142,17 @@ const roomApi = {
     const config: AxiosRequestConfig = {
       params: filters
     };
-    const response = await axiosClient.get(`${API_URL}/rooms`, config);
+    const response = await axiosClient.get('/api/rooms', config);
     return response.data;
   },
 
   getRoomById: async (id: number) => {
-    const response = await axiosClient.get(`${API_URL}/rooms/${id}`);
+    const response = await axiosClient.get(`/api/rooms/${id}`);
     return response.data;
   },
 
   addRoom: async (formData: FormData) => {
-    const response = await axiosClient.post(`${API_URL}/rooms`, formData, {
+    const response = await axiosClient.post('/api/rooms', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -161,7 +161,7 @@ const roomApi = {
   },
 
   updateRoom: async (id: number, formData: FormData) => {
-    const response = await axiosClient.put(`${API_URL}/rooms/${id.toString()}`, formData, {
+    const response = await axiosClient.put(`/api/rooms/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -170,22 +170,22 @@ const roomApi = {
   },
 
   deleteRoom: async (id: number) => {
-    const response = await axiosClient.delete(`${API_URL}/rooms/${id}`);
+    const response = await axiosClient.delete(`/api/rooms/${id}`);
     return response.data;
   },
 
   getRoomDetail: async (id: number): Promise<RoomDetail> => {
-    const response = await axiosClient.get(`${API_URL}/rooms/${id}/detail`);
+    const response = await axiosClient.get(`/api/rooms/${id}/detail`);
     return response.data;
   },
 
   getRoomTimeline: async (id: number): Promise<TimelineItem[]> => {
-    const response = await axiosClient.get(`${API_URL}/rooms/${id}/timeline`);
+    const response = await axiosClient.get(`/api/rooms/${id}/timeline`);
     return response.data.data;
   },
 
   processMaintenanceRequest: async (requestId: number, status: string, notes?: string) => {
-    const response = await axiosClient.put(`${API_URL}/rooms/maintenance-requests/${requestId}`, {
+    const response = await axiosClient.put(`/api/rooms/maintenance-requests/${requestId}`, {
       status,
       notes
     });
@@ -193,30 +193,35 @@ const roomApi = {
   },
 
   addMaintenance: async (roomId: number, maintenanceData: any) => {
-    const response = await axiosClient.post(`${API_URL}/rooms/${roomId}/maintenance`, maintenanceData);
+    const response = await axiosClient.post(`/api/rooms/${roomId}/maintenance`, maintenanceData);
     return response.data;
   },
 
   removeResident: async (roomId: number, residentId: number) => {
-    const response = await axiosClient.delete(`${API_URL}/rooms/${roomId}/residents/${residentId}`);
+    const response = await axiosClient.delete(`/api/rooms/${roomId}/residents/${residentId}`);
     return response.data;
   },
 
   addUtility: async (roomId: number, utilityData: any) => {
-    const response = await axiosClient.post(`${API_URL}/rooms/${roomId}/utilities`, utilityData);
+    const response = await axiosClient.post(`/api/rooms/${roomId}/utilities`, utilityData);
     return response.data;
   },
 
   updateRoomStatus: async (id: number, status: string) => {
-    const response = await axiosClient.put(`${API_URL}/rooms/${id}/status`, { status });
+    const response = await axiosClient.put(`/api/rooms/${id}/status`, { status });
     return response.data;
   },
 
   updateInvoiceStatus: async (invoiceId: number, status: string) => {
-    const response = await axiosClient.put(`${API_URL}/invoices/${invoiceId}/status`, {
+    const response = await axiosClient.put(`/api/invoices/${invoiceId}/status`, {
       status,
       paidDate: status === 'paid' ? new Date().toISOString().split('T')[0] : undefined
     });
+    return response.data;
+  },
+
+  getStudentRoomDetail: async (roomId: string | number) => {
+    const response = await axiosClient.get(`/rooms/${roomId}/detail`);
     return response.data;
   },
 };

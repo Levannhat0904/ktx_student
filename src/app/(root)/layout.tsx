@@ -10,7 +10,10 @@ import { MenuProvider } from "@/contexts/MenuContext";
 import { AUTH_ROUTES, colors, Routers } from "@/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import StudentLayout from "@/components/layouts/MainLayout";
-
+import { StudentProvider } from "@/contexts/StudentContext";
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 type Props = {
   children: React.ReactNode;
 };
@@ -38,7 +41,9 @@ export default function RootLayout({ children }: Props) {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <MenuProvider>
-            <DisclosureProvider>{renderLayout()}</DisclosureProvider>
+            <StudentProvider>
+              <DisclosureProvider>{renderLayout()}</DisclosureProvider>
+            </StudentProvider>
           </MenuProvider>
         </AuthProvider>
         <ProgressBar

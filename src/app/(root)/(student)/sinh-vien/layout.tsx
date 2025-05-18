@@ -8,5 +8,5 @@ export default function StudentRootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <StudentLayout>{children}</StudentLayout>;
+  return <>{children}</>;
 }

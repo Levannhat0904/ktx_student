@@ -28,6 +28,7 @@ const MaintenanceRequestTable: React.FC<MaintenanceRequestTableProps> = ({
       processing: "processing",
       completed: "success",
       rejected: "error",
+      canceled: "error",
     };
     return statusColors[status] || "default";
   };
@@ -94,6 +95,8 @@ const MaintenanceRequestTable: React.FC<MaintenanceRequestTableProps> = ({
             ? "Đang xử lý"
             : status === "rejected"
             ? "Từ chối"
+            : status === "canceled"
+            ? "Đã hủy"
             : "Chờ xử lý"}
         </Tag>
       ),

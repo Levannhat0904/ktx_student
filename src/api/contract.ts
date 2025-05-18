@@ -78,6 +78,11 @@ const contractApi = {
       throw error;
     }
   },
+
+  // Lấy lịch sử hoạt động của hợp đồng
+  getContractTimeline: async (contractId: number): Promise<ApiResponse<any>> => {
+    return axiosClient.get(`${API_URL}/${contractId}/timeline`);
+  },
 };
 
 export default contractApi;

@@ -5,5 +5,4 @@ export * from './building';
 export * from './contract';
 export * from './invoice';
 export * from './dashboard';
-export * from './admin';
 export * from './administrative';

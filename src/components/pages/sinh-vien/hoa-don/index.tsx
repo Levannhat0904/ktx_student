@@ -51,6 +51,12 @@ const InvoicePage: React.FC = () => {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  const handlePayInvoice = (invoiceId: number) => {
+    message.info(
+      `Thanh toán hóa đơn #${invoiceId} sẽ sớm được cập nhật`
+    )
+  };
+
   useEffect(() => {
     if (invoiceData?.success && invoiceData?.data?.invoices) {
       setInvoices(invoiceData.data.invoices);
@@ -92,6 +98,8 @@ const InvoicePage: React.FC = () => {
         return "Đã thanh toán";
       case "pending":
         return "Chờ thanh toán";
+      case "waiting_for_approval":
+        return "Chờ duyệt";
       case "overdue":
         return "Quá hạn";
       default:
@@ -177,6 +185,9 @@ const InvoicePage: React.FC = () => {
               type="primary"
               style={{ background: "#fa8c16", borderColor: "#fa8c16" }}
               size="small"
+              onClick={() => {
+                handlePayInvoice(record.id);
+              }}
             >
               Thanh toán
             </Button>

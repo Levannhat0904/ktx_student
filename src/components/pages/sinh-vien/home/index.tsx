@@ -274,9 +274,7 @@ const StudentHomePage = () => {
                       router.push(`/sinh-vien/hoa-don?id=${id}`)
                     }
                     onPayInvoice={(id) =>
-                      message.info(
-                        `Thanh toán hóa đơn #${id} sẽ sớm được cập nhật`
-                      )
+                      router.push(`/sinh-vien/hoa-don?id=${id}`)
                     }
                   />
                   {invoices.length > 0 && (

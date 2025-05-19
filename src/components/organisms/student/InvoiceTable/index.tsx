@@ -27,6 +27,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
       paid: "success",
       pending: "warning",
       overdue: "error",
+      waiting_for_approval: "warning",
     };
     return statusColors[status] || "default";
   };
@@ -38,6 +39,8 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
         return "Đã thanh toán";
       case "pending":
         return "Chờ thanh toán";
+      case "waiting_for_approval":
+        return "Chờ duyệt";
       case "overdue":
         return "Quá hạn";
       default:

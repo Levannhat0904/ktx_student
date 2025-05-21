@@ -130,7 +130,7 @@ export interface Invoice {
   waterFee?: number;
   serviceFee?: number;
   totalAmount?: number;
-  paymentStatus?: 'pending' | 'paid' | 'overdue';
+  paymentStatus?: 'pending' | 'paid' | 'overdue' | 'waiting_for_approval';
   paymentDate?: string;
   paymentMethod?: string;
   createdAt?: string;
@@ -158,4 +158,16 @@ export interface StudentDetailData {
   dormitory?: Dormitory;
   history?: HistoryItem[];
   roommates?: Roommate[];
+}
+export interface InvoicePayment {
+  id: number;
+  invoiceNumber: string;
+  invoiceMonth: string;
+  totalAmount: number;
+  roomNumber: string;
+  floorNumber: number;
+  buildingName: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
 }

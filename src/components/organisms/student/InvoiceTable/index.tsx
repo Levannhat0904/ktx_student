@@ -2,6 +2,7 @@ import React from "react";
 import { Table, Tag, Space, Button, Typography, Card } from "antd";
 import { Invoice } from "@/types/student";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { formatDateMonthYear } from "@/utils";
 
 interface InvoiceTableProps {
   invoices: Invoice[];
@@ -83,7 +84,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
       dataIndex: "invoiceMonth",
       key: "invoiceMonth",
       width: 150,
-      render: (date: string) => formatMonth(date),
+      render: (date: string) => formatDateMonthYear(date),
     },
     {
       title: "Hạn thanh toán",

@@ -33,6 +33,12 @@ export const SPACE_SIZE_DEFAULT = 17;
 
 export const LOGO_URL = "/images/logo_utt.png";
 
+export const LOGO_MB = "/images/payment/mb.jpg";
+
+export const LOGO_TCB = "/images/payment/tech.jpeg";
+
+export const LOGO_CAKE = "/images/payment/cake.png";
+
 export const LOGO_SIDEBAR_URL = "/images/logo_utt.png";
 
 export const ICON_SIZE_SMALL = 16;

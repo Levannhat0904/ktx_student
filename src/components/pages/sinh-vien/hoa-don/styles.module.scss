@@ -1,0 +1,11 @@
+.timeline_custom {
+  :global {
+    .ant-timeline {
+      .ant-timeline-item {
+        margin-top: 10px !important;
+        margin-left: 10px !important;
+        padding-bottom: 10px !important;
+      }
+    }
+  }
+}

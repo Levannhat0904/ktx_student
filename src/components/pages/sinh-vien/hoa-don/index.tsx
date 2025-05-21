@@ -15,17 +15,26 @@ import {
   Table,
   Tag,
   Space,
+  Timeline,
 } from "antd";
 import {
   CreditCardOutlined,
   DollarOutlined,
   FileDoneOutlined,
   FileExclamationOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  FileAddOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetCurrentStudentInvoices } from "@/api/invoice";
 import { Invoice } from "@/types/student";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useRouter } from "next/navigation";
+import studentApi from "@/api/student";
+import styles from "./styles.module.scss";
+import { formatDateMonthYear } from "@/utils";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -40,6 +49,8 @@ const InvoicePage: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [totalUnpaid, setTotalUnpaid] = useState(0);
   const [totalPaid, setTotalPaid] = useState(0);
+  const [timelineData, setTimelineData] = useState<any[]>([]);
+  const router = useRouter();
 
   // Use React Query to fetch invoice data
   const {
@@ -51,10 +62,12 @@ const InvoicePage: React.FC = () => {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  const handlePayInvoice = (invoiceId: number) => {
-    message.info(
-      `Thanh toán hóa đơn #${invoiceId} sẽ sớm được cập nhật`
-    )
+  const handlePayInvoice = (invoiceId: number | undefined) => {
+    if (invoiceId) {
+      router.push(`/sinh-vien/hoa-don/payment?id=${invoiceId}`);
+    } else {
+      message.error("Không thể tìm thấy mã hóa đơn");
+    }
   };
 
   useEffect(() => {
@@ -81,6 +94,23 @@ const InvoicePage: React.FC = () => {
       message.error("Không thể tải thông tin hóa đơn");
     }
   }, [invoiceData, isError, error]);
+  
+  useEffect(() => {
+    const fetchTimeline = async () => {
+      if (invoices.length > 0) {
+        try {
+          const timelineResponse = await studentApi.getActivityLogs('invoice', invoices[0]?.id);
+          if (timelineResponse.data.success && timelineResponse.data.data.logs) {
+            setTimelineData(timelineResponse.data.data.logs);
+          }
+        } catch (error) {
+          console.error("Error fetching timeline:", error);
+          message.error("Không thể tải lịch sử hoạt động");
+        }
+      }
+    };
+    fetchTimeline();
+  }, [invoices]);
 
   // Hàm lấy màu cho tag trạng thái
   const getStatusColor = (status: string) => {
@@ -88,6 +118,7 @@ const InvoicePage: React.FC = () => {
       paid: "success",
       pending: "warning",
       overdue: "error",
+      waiting_for_approval: "processing"
     };
     return statusColors[status] || "default";
   };
@@ -110,7 +141,9 @@ const InvoicePage: React.FC = () => {
   // Phân loại hóa đơn
   const unpaidInvoices = invoices.filter(
     (invoice) =>
-      invoice.paymentStatus === "pending" || invoice.paymentStatus === "overdue"
+      invoice.paymentStatus === "pending" || 
+      invoice.paymentStatus === "overdue" ||
+      invoice.paymentStatus === "waiting_for_approval"
   );
   const paidInvoices = invoices.filter(
     (invoice) => invoice.paymentStatus === "paid"
@@ -131,10 +164,7 @@ const InvoicePage: React.FC = () => {
       width: isMobile ? 120 : 140,
       render: (date: string) =>
         date
-          ? new Date(date).toLocaleDateString("vi-VN", {
-              month: "long",
-              year: "numeric",
-            })
+          ? formatDateMonthYear(date)
           : "",
     },
     {
@@ -180,7 +210,7 @@ const InvoicePage: React.FC = () => {
       width: isMobile ? 140 : 160,
       render: (_: any, record: Invoice) => (
         <Space size="small">
-          {record.paymentStatus !== "paid" && (
+          {(record.paymentStatus === "pending" || record.paymentStatus === "overdue") && (
             <Button
               type="primary"
               style={{ background: "#fa8c16", borderColor: "#fa8c16" }}
@@ -192,11 +222,54 @@ const InvoicePage: React.FC = () => {
               Thanh toán
             </Button>
           )}
+          {record.paymentStatus === "waiting_for_approval" && (
+            <Button
+              type="dashed"
+              size="small"
+              disabled
+            >
+              Đang xử lý
+            </Button>
+          )}
           <Button size="small">Chi tiết</Button>
         </Space>
       ),
     },
   ];
+
+  // Hàm format nội dung timeline
+  const getTimelineContent = (log: any) => {
+    console.log('Processing log:', log);
+    let color = "blue";
+    let icon = <ClockCircleOutlined />;
+
+    switch (log.action) {
+      case "payment_submitted":
+        color = "orange";
+        icon = <ClockCircleOutlined />;
+        break;
+      case "payment_approved":
+        color = "green";
+        icon = <CheckCircleOutlined />;
+        break;
+      case "payment_rejected":
+        color = "red";
+        icon = <ExclamationCircleOutlined />;
+        break;
+      case "create":
+        color = "blue";
+        icon = <FileAddOutlined />;
+        break;
+      default:
+        color = "gray";
+        icon = <ClockCircleOutlined />;
+    }
+
+    return {
+      color,
+      dot: icon
+    };
+  };
 
   if (isLoading) {
     return (
@@ -207,8 +280,9 @@ const InvoicePage: React.FC = () => {
   }
 
   return (
-    <Layout className="min-h-screen bg-gray-50">
+    <Layout className="min-h-screen max-w-screen bg-gray-50">
       <Content className="p-4 md:p-6">
+        {/* Header */}
         <Card style={{ marginBottom: 20, borderRadius: 8 }}>
           <Title level={3} style={{ color: "#fa8c16", margin: 0 }}>
             <CreditCardOutlined /> Quản lý hóa đơn
@@ -216,131 +290,195 @@ const InvoicePage: React.FC = () => {
           <Text>Xem và thanh toán các hóa đơn phòng ký túc xá của bạn</Text>
         </Card>
 
-        {/* Thống kê */}
-        <Row gutter={[16, 16]} className="mb-6">
-          <Col xs={24} sm={12}>
-            <Card
-              className="rounded-lg bg-orange-50 border-orange-50 hover:shadow-md transition-shadow"
-              bodyStyle={{ padding: isMobile ? 12 : 16 }}
-            >
-              <Row align="middle" gutter={16}>
-                <Col>
-                  <DollarOutlined style={{ fontSize: 36, color: "#fa8c16" }} />
-                </Col>
-                <Col>
-                  <div style={{ fontSize: 14, color: "#666" }}>
-                    Cần thanh toán
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 24,
-                      fontWeight: "bold",
-                      color: "#fa541c",
-                    }}
-                  >
-                    {Number(totalUnpaid).toLocaleString("vi-VN")} VNĐ
-                  </div>
-                </Col>
-              </Row>
+        <Row gutter={[24, 24]}>
+          {/* Left Content */}
+          <Col xs={24} lg={16}>
+            {/* Thống kê */}
+            <Row gutter={[16, 16]} className="mb-6">
+              <Col xs={24} sm={12}>
+                <Card
+                  className="rounded-lg bg-orange-50 border-orange-50 hover:shadow-md transition-shadow"
+                  bodyStyle={{ padding: isMobile ? 12 : 16 }}
+                >
+                  <Row align="middle" gutter={16}>
+                    <Col>
+                      <DollarOutlined style={{ fontSize: 36, color: "#fa8c16" }} />
+                    </Col>
+                    <Col>
+                      <div style={{ fontSize: 14, color: "#666" }}>
+                        Cần thanh toán
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 24,
+                          fontWeight: "bold",
+                          color: "#fa541c",
+                        }}
+                      >
+                        {Number(totalUnpaid).toLocaleString("vi-VN")} VNĐ
+                      </div>
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Card
+                  style={{
+                    borderRadius: 8,
+                    backgroundColor: "#e6f7ff",
+                    borderColor: "#e6f7ff",
+                  }}
+                  bodyStyle={{ padding: 16 }}
+                >
+                  <Row align="middle" gutter={16}>
+                    <Col>
+                      <FileDoneOutlined
+                        style={{ fontSize: 36, color: "#1890ff" }}
+                      />
+                    </Col>
+                    <Col>
+                      <div style={{ fontSize: 14, color: "#666" }}>
+                        Đã thanh toán
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 24,
+                          fontWeight: "bold",
+                          color: "#096dd9",
+                        }}
+                      >
+                        {Number(totalPaid).toLocaleString("vi-VN")} VNĐ
+                      </div>
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+            </Row>
+
+            {/* Invoice Tables */}
+            <Card style={{ borderRadius: 8 }}>
+              <Tabs
+                defaultActiveKey="unpaid"
+                className="invoice-tabs"
+                size={isMobile ? "small" : "middle"}
+              >
+                <TabPane
+                  tab={
+                    <span>
+                      <FileExclamationOutlined /> Chờ thanh toán (
+                      {unpaidInvoices.length})
+                    </span>
+                  }
+                  key="unpaid"
+                >
+                  {unpaidInvoices.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <Table
+                        columns={columns}
+                        dataSource={unpaidInvoices}
+                        rowKey="id"
+                        pagination={false}
+                        scroll={{ x: 800 }}
+                        size={isMobile ? "small" : "middle"}
+                        className="whitespace-nowrap"
+                      />
+                    </div>
+                  ) : (
+                    <Empty
+                      description="Không có hóa đơn nào cần thanh toán"
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    />
+                  )}
+                </TabPane>
+                <TabPane
+                  tab={
+                    <span>
+                      <FileDoneOutlined /> Đã thanh toán ({paidInvoices.length})
+                    </span>
+                  }
+                  key="paid"
+                >
+                  {paidInvoices.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <Table
+                        columns={columns}
+                        dataSource={paidInvoices}
+                        rowKey="id"
+                        pagination={false}
+                        scroll={{ x: 800 }}
+                        size={isMobile ? "small" : "middle"}
+                        className="whitespace-nowrap"
+                      />
+                    </div>
+                  ) : (
+                    <Empty
+                      description="Không có hóa đơn nào đã thanh toán"
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    />
+                  )}
+                </TabPane>
+              </Tabs>
             </Card>
           </Col>
-          <Col xs={24} sm={12}>
-            <Card
-              style={{
-                borderRadius: 8,
-                backgroundColor: "#e6f7ff",
-                borderColor: "#e6f7ff",
+
+          {/* Timeline */}
+          <Col xs={24} lg={8}>
+            <Card 
+              title={
+                <span className="flex items-center gap-2">
+                  <ClockCircleOutlined className="text-blue-500" />
+                  <span>Lịch sử hoạt động</span>
+                </span>
+              }
+              className="h-full"
+              style={{ borderRadius: 8 }}
+              bodyStyle={{ 
+                height: 'calc(100% - 57px)',
+                overflowY: 'auto',
+                paddingRight: 12
               }}
-              bodyStyle={{ padding: 16 }}
             >
-              <Row align="middle" gutter={16}>
-                <Col>
-                  <FileDoneOutlined
-                    style={{ fontSize: 36, color: "#1890ff" }}
+              <div className={styles.timeline_custom + " max-h-[450px] overflow-y-auto"}>
+                <Timeline>
+                  {timelineData.map((log, index) => {
+                    const timelineItem = getTimelineContent(log);
+                    return (
+                      <Timeline.Item
+                        key={log.id}
+                        color={timelineItem.color}
+                        dot={timelineItem.dot}
+                      >
+                        <div className="pb-4">
+                          <div className="font-medium text-gray-800">
+                            {log.userName} ({log.email})
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">
+                            {log.description}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            {new Date(log.createdAt).toLocaleString("vi-VN", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                          </div>
+                        </div>
+                      </Timeline.Item>
+                    );
+                  })}
+                </Timeline>
+                {timelineData.length === 0 && (
+                  <Empty
+                    description="Chưa có hoạt động nào"
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
                   />
-                </Col>
-                <Col>
-                  <div style={{ fontSize: 14, color: "#666" }}>
-                    Đã thanh toán
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 24,
-                      fontWeight: "bold",
-                      color: "#096dd9",
-                    }}
-                  >
-                    {Number(totalPaid).toLocaleString("vi-VN")} VNĐ
-                  </div>
-                </Col>
-              </Row>
+                )}
+              </div>
             </Card>
           </Col>
         </Row>
-
-        <Card style={{ borderRadius: 8 }}>
-          <Tabs
-            defaultActiveKey="unpaid"
-            className="invoice-tabs"
-            size={isMobile ? "small" : "middle"}
-          >
-            <TabPane
-              tab={
-                <span>
-                  <FileExclamationOutlined /> Chờ thanh toán (
-                  {unpaidInvoices.length})
-                </span>
-              }
-              key="unpaid"
-            >
-              {unpaidInvoices.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <Table
-                    columns={columns}
-                    dataSource={unpaidInvoices}
-                    rowKey="id"
-                    pagination={false}
-                    scroll={{ x: 800 }}
-                    size={isMobile ? "small" : "middle"}
-                    className="whitespace-nowrap"
-                  />
-                </div>
-              ) : (
-                <Empty
-                  description="Không có hóa đơn nào cần thanh toán"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                />
-              )}
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <FileDoneOutlined /> Đã thanh toán ({paidInvoices.length})
-                </span>
-              }
-              key="paid"
-            >
-              {paidInvoices.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <Table
-                    columns={columns}
-                    dataSource={paidInvoices}
-                    rowKey="id"
-                    pagination={false}
-                    scroll={{ x: 800 }}
-                    size={isMobile ? "small" : "middle"}
-                    className="whitespace-nowrap"
-                  />
-                </div>
-              ) : (
-                <Empty
-                  description="Không có hóa đơn nào đã thanh toán"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                />
-              )}
-            </TabPane>
-          </Tabs>
-        </Card>
       </Content>
     </Layout>
   );

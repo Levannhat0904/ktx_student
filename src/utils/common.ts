@@ -179,7 +179,13 @@ export const formatDate = (
   return dayjs(new Date(Number(date))).format(format);
 };
 
-
+export const formatDateMonthYear = (dateString?: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1; // Tháng bắt đầu từ 0
+  const year = date.getFullYear();
+  return `${month}/${year}`;
+};
 
 export const findOptionLabel = (options: TOption[], value?: string | number) => {
   if (!options || options.length === 0 || !value) {
@@ -207,3 +213,19 @@ export const getIsPhoneNumberValidated = (phoneNumber: string) => {
   return phoneRegex.test(phoneNumber || "");
 }
 
+export const generateQRCode = (paymentMethod: string, amount: number, description: string) => {
+  console.log("paymentMethod", paymentMethod, amount, description);
+  switch (paymentMethod) {
+    case "MBBANK":
+      return `https://img.vietqr.io/image/MB-5409042003-print.png?amount=${amount}&addInfo=${description}&accountName="LE VAN NHAT"`;
+    case "TECHCOMBANK":
+      return `https://img.vietqr.io/image/TCB-5409042003-print.png?amount=${amount}-print&addInfo=${description}&accountName="LE VAN NHAT"`;
+    case "CAKE":
+      return `https://img.vietqr.io/image/CAKE-5409042003-print.png?amount=${amount}-print&addInfo=${description}&accountName="LE VAN NHAT"`;
+    default:
+      return "https://img.vietqr.io/image/CAKE-5409042003-print.png";
+  }
+  
+  // https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<DESCRIPTION>&accountName=<ACCOUNT_NAME>
+
+}

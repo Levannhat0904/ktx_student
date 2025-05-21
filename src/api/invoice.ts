@@ -18,7 +18,7 @@ export interface Invoice {
   waterFee: number;
   serviceFee: number;
   totalAmount: number;
-  paymentStatus: 'pending' | 'paid' | 'overdue';
+  paymentStatus: 'pending' | 'paid' | 'overdue' | 'waiting_for_approval';
   paymentDate?: string;
   paymentMethod?: string;
   createdAt: string;
@@ -67,6 +67,16 @@ export interface InvoiceDetailResponse {
   success: boolean;
   message?: string;
   data: Invoice;
+}
+
+export interface PaymentResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    id: number;
+    status: string;
+    paymentMethod: string;
+  };
 }
 
 const invoiceApi = {
@@ -253,6 +263,22 @@ const invoiceApi = {
       };
     }
   },
+
+  // Submit payment for an invoice
+  submitPayment: async (invoiceId: number, paymentMethod: string): Promise<PaymentResponse> => {
+    try {
+      const response = await axiosClient.post(`${API_URL}/invoices/${invoiceId}/payment`, { 
+        paymentMethod 
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error("Error submitting payment:", error);
+      return {
+        success: false,
+        message: error.response?.data?.message || "Lỗi khi gửi yêu cầu thanh toán"
+      };
+    }
+  },
 };
 
 // React Query hooks
@@ -267,7 +293,36 @@ export const useGetStudentInvoices = (studentId: number) => {
 export const useGetCurrentStudentInvoices = () => {
   return useQuery({
     queryKey: ['currentStudentInvoices'],
-    queryFn: () => invoiceApi.getCurrentStudentInvoices(),
+    queryFn: invoiceApi.getCurrentStudentInvoices,
+  });
+};
+
+export const useGetInvoiceById = (invoiceId: number) => {
+  return useQuery({
+    queryKey: ['invoice', invoiceId],
+    queryFn: () => invoiceApi.getInvoiceById(invoiceId),
+    enabled: !!invoiceId,
+  });
+};
+
+export const useSubmitInvoicePayment = () => {
+  return useMutation<
+    PaymentResponse, 
+    Error,
+    { invoiceId: number; paymentMethod: string }
+  >({
+    mutationFn: ({ invoiceId, paymentMethod }) => 
+      invoiceApi.submitPayment(invoiceId, paymentMethod),
+    onSuccess: (data) => {
+      if (data.success) {
+        message.success(data.message || 'Gửi yêu cầu thanh toán thành công');
+      } else {
+        message.error(data.message || 'Gửi yêu cầu thất bại');
+      }
+    },
+    onError: (error) => {
+      message.error(error.message || 'Lỗi khi gửi yêu cầu thanh toán');
+    }
   });
 };
 

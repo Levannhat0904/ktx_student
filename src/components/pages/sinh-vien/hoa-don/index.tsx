@@ -27,14 +27,14 @@ import {
   ExclamationCircleOutlined,
   FileAddOutlined,
 } from "@ant-design/icons";
-import { useAuth } from "@/contexts/AuthContext";
 import { useGetCurrentStudentInvoices } from "@/api/invoice";
 import { Invoice } from "@/types/student";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useRouter } from "next/navigation";
 import studentApi from "@/api/student";
 import styles from "./styles.module.scss";
-import { formatDateMonthYear } from "@/utils";
+import { formatCurrency, formatDateMonthYear } from "@/utils";
+import InvoiceDetailModal from "./components/InvoiceDetailModal";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -45,11 +45,14 @@ const { TabPane } = Tabs;
  * Hiển thị danh sách hóa đơn, chi tiết hóa đơn, lịch sử thanh toán
  */
 const InvoicePage: React.FC = () => {
-  const { user } = useAuth() as any;
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [totalUnpaid, setTotalUnpaid] = useState(0);
   const [totalPaid, setTotalPaid] = useState(0);
   const [timelineData, setTimelineData] = useState<any[]>([]);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(
+    null
+  );
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const router = useRouter();
 
   // Use React Query to fetch invoice data
@@ -68,6 +71,16 @@ const InvoicePage: React.FC = () => {
     } else {
       message.error("Không thể tìm thấy mã hóa đơn");
     }
+  };
+
+  const handleViewDetail = (invoiceId: number) => {
+    setSelectedInvoiceId(invoiceId);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setSelectedInvoiceId(null);
+    setIsDetailModalOpen(false);
   };
 
   useEffect(() => {
@@ -94,13 +107,19 @@ const InvoicePage: React.FC = () => {
       message.error("Không thể tải thông tin hóa đơn");
     }
   }, [invoiceData, isError, error]);
-  
+
   useEffect(() => {
     const fetchTimeline = async () => {
       if (invoices.length > 0) {
         try {
-          const timelineResponse = await studentApi.getActivityLogs('invoice', invoices[0]?.id);
-          if (timelineResponse.data.success && timelineResponse.data.data.logs) {
+          const timelineResponse = await studentApi.getActivityLogs(
+            "invoice",
+            invoices[0]?.id
+          );
+          if (
+            timelineResponse.data.success &&
+            timelineResponse.data.data.logs
+          ) {
             setTimelineData(timelineResponse.data.data.logs);
           }
         } catch (error) {
@@ -118,7 +137,7 @@ const InvoicePage: React.FC = () => {
       paid: "success",
       pending: "warning",
       overdue: "error",
-      waiting_for_approval: "processing"
+      waiting_for_approval: "processing",
     };
     return statusColors[status] || "default";
   };
@@ -141,7 +160,7 @@ const InvoicePage: React.FC = () => {
   // Phân loại hóa đơn
   const unpaidInvoices = invoices.filter(
     (invoice) =>
-      invoice.paymentStatus === "pending" || 
+      invoice.paymentStatus === "pending" ||
       invoice.paymentStatus === "overdue" ||
       invoice.paymentStatus === "waiting_for_approval"
   );
@@ -162,10 +181,7 @@ const InvoicePage: React.FC = () => {
       dataIndex: "invoiceMonth",
       key: "invoiceMonth",
       width: isMobile ? 120 : 140,
-      render: (date: string) =>
-        date
-          ? formatDateMonthYear(date)
-          : "",
+      render: (date: string) => (date ? formatDateMonthYear(date) : ""),
     },
     {
       title: "Hạn thanh toán",
@@ -182,7 +198,7 @@ const InvoicePage: React.FC = () => {
       width: isMobile ? 120 : 130,
       render: (amount: number) => (
         <Text strong className="text-orange-500">
-          {amount ? `${amount.toLocaleString("vi-VN")} VNĐ` : "0 VNĐ"}
+          {amount ? `${formatCurrency(Number(amount))} VNĐ` : "0 VNĐ"}
         </Text>
       ),
     },
@@ -210,7 +226,8 @@ const InvoicePage: React.FC = () => {
       width: isMobile ? 140 : 160,
       render: (_: any, record: Invoice) => (
         <Space size="small">
-          {(record.paymentStatus === "pending" || record.paymentStatus === "overdue") && (
+          {(record.paymentStatus === "pending" ||
+            record.paymentStatus === "overdue") && (
             <Button
               type="primary"
               style={{ background: "#fa8c16", borderColor: "#fa8c16" }}
@@ -223,15 +240,13 @@ const InvoicePage: React.FC = () => {
             </Button>
           )}
           {record.paymentStatus === "waiting_for_approval" && (
-            <Button
-              type="dashed"
-              size="small"
-              disabled
-            >
+            <Button type="dashed" size="small" disabled>
               Đang xử lý
             </Button>
           )}
-          <Button size="small">Chi tiết</Button>
+          <Button size="small" onClick={() => handleViewDetail(record.id || 0)}>
+            Chi tiết
+          </Button>
         </Space>
       ),
     },
@@ -239,7 +254,7 @@ const InvoicePage: React.FC = () => {
 
   // Hàm format nội dung timeline
   const getTimelineContent = (log: any) => {
-    console.log('Processing log:', log);
+    console.log("Processing log:", log);
     let color = "blue";
     let icon = <ClockCircleOutlined />;
 
@@ -267,7 +282,7 @@ const InvoicePage: React.FC = () => {
 
     return {
       color,
-      dot: icon
+      dot: icon,
     };
   };
 
@@ -302,7 +317,9 @@ const InvoicePage: React.FC = () => {
                 >
                   <Row align="middle" gutter={16}>
                     <Col>
-                      <DollarOutlined style={{ fontSize: 36, color: "#fa8c16" }} />
+                      <DollarOutlined
+                        style={{ fontSize: 36, color: "#fa8c16" }}
+                      />
                     </Col>
                     <Col>
                       <div style={{ fontSize: 14, color: "#666" }}>
@@ -423,7 +440,7 @@ const InvoicePage: React.FC = () => {
 
           {/* Timeline */}
           <Col xs={24} lg={8}>
-            <Card 
+            <Card
               title={
                 <span className="flex items-center gap-2">
                   <ClockCircleOutlined className="text-blue-500" />
@@ -432,13 +449,17 @@ const InvoicePage: React.FC = () => {
               }
               className="h-full"
               style={{ borderRadius: 8 }}
-              bodyStyle={{ 
-                height: 'calc(100% - 57px)',
-                overflowY: 'auto',
-                paddingRight: 12
+              bodyStyle={{
+                height: "calc(100% - 57px)",
+                overflowY: "auto",
+                paddingRight: 12,
               }}
             >
-              <div className={styles.timeline_custom + " max-h-[450px] overflow-y-auto"}>
+              <div
+                className={
+                  styles.timeline_custom + " max-h-[450px] overflow-y-auto"
+                }
+              >
                 <Timeline>
                   {timelineData.map((log, index) => {
                     const timelineItem = getTimelineContent(log);
@@ -480,6 +501,13 @@ const InvoicePage: React.FC = () => {
           </Col>
         </Row>
       </Content>
+
+      {/* Add the modal component */}
+      <InvoiceDetailModal
+        invoiceId={selectedInvoiceId}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+      />
     </Layout>
   );
 };

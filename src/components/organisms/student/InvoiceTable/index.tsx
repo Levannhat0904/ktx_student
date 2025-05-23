@@ -1,8 +1,10 @@
-import React from "react";
-import { Table, Tag, Space, Button, Typography, Card } from "antd";
+import React, { useState } from "react";
+import { Table, Tag, Space, Button, Typography, Card, message } from "antd";
 import { Invoice } from "@/types/student";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { formatDateMonthYear } from "@/utils";
+import { useRouter } from "next/navigation";
+import InvoiceDetailModal from "@/components/pages/sinh-vien/hoa-don/components/InvoiceDetailModal";
 
 interface InvoiceTableProps {
   invoices: Invoice[];
@@ -21,7 +23,21 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
   onPayInvoice,
 }) => {
   const isMobile = useMediaQuery("(max-width: 768px)");
-
+  const router = useRouter();
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(
+    null
+  );
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const handlePayInvoice = (invoiceId: number | undefined) => {
+    if (invoiceId) {
+      router.push(`/sinh-vien/hoa-don/payment?id=${invoiceId}`);
+    } else {
+      message.error("Không thể tìm thấy mã hóa đơn");
+    }
+  };
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+  };
   const getStatusColor = (status: string | undefined) => {
     if (!status) return "default";
     const statusColors: Record<string, string> = {
@@ -100,7 +116,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
       width: 150,
       render: (amount: number) => (
         <Typography.Text strong className="text-orange-500">
-          {formatCurrency(amount)}
+          {formatCurrency(Number(amount))}
         </Typography.Text>
       ),
     },
@@ -114,7 +130,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
       ),
     },
     {
-      title: "Hành động",
+      title: "Hành độngg",
       key: "action",
       fixed: isMobile ? undefined : ("left" as const),
       width: 200,
@@ -127,17 +143,16 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                 background: "#fa8c16",
                 borderColor: "#fa8c16",
               }}
-              onClick={() =>
-                onPayInvoice && record.id && onPayInvoice(record.id)
-              }
+              onClick={() => handlePayInvoice(record.id)}
             >
               Thanh toán
             </Button>
           )}
           <Button
-            onClick={() =>
-              onViewInvoiceDetail && record.id && onViewInvoiceDetail(record.id)
-            }
+            onClick={() => {
+              setSelectedInvoiceId(record.id || null);
+              setIsDetailModalOpen(true);
+            }}
           >
             Chi tiết
           </Button>
@@ -159,6 +174,11 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
         }}
         scroll={{ x: 900 }}
         className="invoice-table"
+      />
+      <InvoiceDetailModal
+        invoiceId={selectedInvoiceId}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
       />
     </div>
   );

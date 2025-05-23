@@ -11,6 +11,7 @@ import {
   BellOutlined,
   LogoutOutlined,
   EditOutlined,
+  IdcardOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -61,6 +62,12 @@ const StudentHeader: React.FC = () => {
       label: "Hóa đơn",
       icon: <CreditCardOutlined />,
       path: "/sinh-vien/hoa-don",
+    },
+    {
+      key: "room",
+      label: "Phòng",
+      icon: <IdcardOutlined />,
+      path: "/sinh-vien/phong",
     },
     {
       key: "maintenance",

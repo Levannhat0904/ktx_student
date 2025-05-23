@@ -20,7 +20,10 @@ import {
   ToolOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import studentApi, { useGetCurrentStudentDetail } from "@/api/student";
+import studentApi, {
+  useCancelMaintenanceRequest,
+  useGetCurrentStudentDetail,
+} from "@/api/student";
 import contractApi from "@/api/contract";
 import { useGetCurrentStudentInvoices } from "@/api/invoice";
 import { useGetRoomMaintenanceRequests } from "@/api/student";
@@ -51,6 +54,7 @@ import {
   Roommate,
 } from "@/types/student";
 import useFetchProfile from "@/hooks/profile/useFetchProfile";
+import MaintenanceDetailModal from "../bao-tri/components/MaintenanceDetailModal";
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -60,6 +64,9 @@ const StudentHomePage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [studentData, setStudentData] = useState<Student | null>(null);
+  const [selectedRequest, setSelectedRequest] =
+    useState<MaintenanceRequest | null>(null);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [roomData, setRoomData] = useState<Dormitory | null>(null);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -93,7 +100,7 @@ const StudentHomePage = () => {
     isLoading: isMaintenanceLoading,
     refetch: refetchMaintenance,
   } = useGetRoomMaintenanceRequests(roomData?.roomId || 0);
-
+  const cancelRequestMutation = useCancelMaintenanceRequest();
   useEffect(() => {
     // When student data is loaded from the hook, update our state
     if (studentDetail?.success && studentDetail?.data) {
@@ -187,6 +194,34 @@ const StudentHomePage = () => {
       </div>
     );
   }
+
+  const handleCancelRequest = async (requestId: number) => {
+    try {
+      Modal.confirm({
+        title: "Xác nhận hủy yêu cầu",
+        content: "Bạn có chắc chắn muốn hủy yêu cầu bảo trì này không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          await cancelRequestMutation.mutateAsync(requestId);
+          message.success("Hủy yêu cầu bảo trì thành công");
+          // Refresh danh sách
+          refetchMaintenance();
+        },
+      });
+    } catch (error) {
+      console.error("Error canceling request:", error);
+      message.error("Không thể hủy yêu cầu. Vui lòng thử lại sau.");
+    }
+  };
+
+  const handleViewDetail = (requestId: number) => {
+    const request = maintenanceRequests.find((r) => r.id === requestId);
+    if (request) {
+      setSelectedRequest(request);
+      setIsDetailModalVisible(true);
+    }
+  };
 
   return (
     <Layout style={{ background: "transparent" }}>
@@ -306,12 +341,8 @@ const StudentHomePage = () => {
                   </div>
                   <MaintenanceRequestTable
                     maintenanceRequests={maintenanceRequests}
-                    onViewDetail={(id) =>
-                      router.push(`/sinh-vien/bao-tri?id=${id}`)
-                    }
-                    onCancelRequest={(id) =>
-                      message.success(`Đã hủy yêu cầu #${id}`)
-                    }
+                    onViewDetail={handleViewDetail}
+                    onCancelRequest={handleCancelRequest}
                   />
                   {maintenanceRequests.length > 0 && (
                     <div className="mt-4 text-right">
@@ -358,6 +389,11 @@ const StudentHomePage = () => {
             onSuccess={handleMaintenanceSubmit}
           />
         </Modal>
+        <MaintenanceDetailModal
+          request={selectedRequest}
+          isOpen={isDetailModalVisible}
+          onClose={() => setIsDetailModalVisible(false)}
+        />
 
         {/* Student Profile Drawer */}
         <StudentProfileDrawer

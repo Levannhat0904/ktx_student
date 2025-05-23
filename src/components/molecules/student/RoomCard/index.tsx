@@ -3,6 +3,7 @@ import { Card, Descriptions, Button, Tag, Typography } from "antd";
 import { HomeOutlined } from "@ant-design/icons";
 import { Dormitory } from "@/types/student";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "@/utils";
 
 const { Text } = Typography;
 
@@ -46,7 +47,11 @@ const RoomCard: React.FC<RoomCardProps> = ({ roomData, onRegisterRoom }) => {
       }}
       extra={
         roomData ? (
-          <Button type="link" style={{ color: "#fa8c16" }} onClick={handleDetailRoom}>
+          <Button
+            type="link"
+            style={{ color: "#fa8c16" }}
+            onClick={handleDetailRoom}
+          >
             Chi tiết
           </Button>
         ) : null
@@ -64,7 +69,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ roomData, onRegisterRoom }) => {
             {roomData.bedNumber || "Chưa cập nhật"}
           </Descriptions.Item>
           <Descriptions.Item label="Giá thuê hàng tháng">
-            {roomData.monthlyFee?.toLocaleString("vi-VN")} VNĐ
+            {formatCurrency(Number(roomData.monthlyFee))} VNĐ
           </Descriptions.Item>
           <Descriptions.Item label="Ngày vào">
             {roomData.checkInDate

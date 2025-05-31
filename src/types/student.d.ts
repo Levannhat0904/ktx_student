@@ -1,5 +1,54 @@
 import { StudentStatusEnum } from "@/constants/enums";
 
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
+
+export interface StudentRegistration {
+  [key: string]: any;
+  email: string;
+  studentCode: string;
+  fullName: string;
+  birthDate: string;
+  gender: "male" | "female";
+  phone: string;
+  province: string;
+  district: string;
+  ward: string;
+  address: string;
+  faculty: string;
+  major: string;
+  className: string;
+  avatarPath?: any;
+}
+
+export interface StudentRegistrationResponse
+  extends ApiResponse<{ id: number }> {}
+
+export interface StudentListResponse extends ApiResponse<Student[]> {
+  pagination: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+export interface StudentDetailResponse extends ApiResponse<Student> {}
+export interface StudentDetailDataResponse
+  extends ApiResponse<StudentDetailData> {}
+export interface UpdateStatusResponse extends ApiResponse<void> {}
+export interface MaintenanceRequestsResponse
+  extends ApiResponse<MaintenanceRequest[]> {}
+
+export interface GetStudentsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
 export interface AdminProfile {
   id: number;
   email: string;
@@ -97,7 +146,7 @@ export interface Contract {
   endDate?: string;
   depositAmount?: number;
   monthlyFee?: number;
-  status?: 'active' | 'expired' | 'terminated';
+  status?: "active" | "expired" | "terminated";
   createdAt?: string;
   updatedAt?: string;
 }
@@ -110,8 +159,8 @@ export interface MaintenanceRequest {
   requestType?: string;
   description?: string;
   imagePaths?: string[];
-  priority?: 'low' | 'normal' | 'high' | 'urgent';
-  status?: 'pending' | 'processing' | 'completed' | 'rejected';
+  priority?: "low" | "normal" | "high" | "urgent";
+  status?: "pending" | "processing" | "completed" | "rejected";
   createdAt?: string;
   resolvedAt?: string;
   resolutionNote?: string;
@@ -130,7 +179,7 @@ export interface Invoice {
   waterFee?: number;
   serviceFee?: number;
   totalAmount?: number;
-  paymentStatus?: 'pending' | 'paid' | 'overdue' | 'waiting_for_approval';
+  paymentStatus?: "pending" | "paid" | "overdue" | "waiting_for_approval";
   paymentDate?: string;
   paymentMethod?: string;
   createdAt?: string;

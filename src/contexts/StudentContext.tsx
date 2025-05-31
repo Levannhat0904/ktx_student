@@ -1,12 +1,12 @@
 "use client";
 
 import React, { createContext, useContext, useEffect } from "react";
-import { Student } from "@/types/student";
+import { Student, StudentDetailDataResponse } from "@/types/student";
 import { useGetCurrentStudentDetail } from "@/api/student";
 import { useAuth } from "./AuthContext";
 
 interface StudentContextType {
-  studentData: Student | null;
+  studentData: StudentDetailDataResponse["data"] | null;
   isLoading: boolean;
   error: Error | null;
   refetchStudent: () => void;
@@ -19,14 +19,18 @@ const StudentContext = createContext<StudentContextType>({
   refetchStudent: () => {},
 });
 
-export const StudentProvider = ({ children }: { children: React.ReactNode }) => {
+export const StudentProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { adminProfile } = useAuth();
-  
+
   const {
     data: studentResponse,
     isLoading,
     error,
-    refetch: refetchStudent
+    refetch: refetchStudent,
   } = useGetCurrentStudentDetail();
 
   // Chỉ fetch lại data khi studentData hoặc adminProfile là null
@@ -37,16 +41,14 @@ export const StudentProvider = ({ children }: { children: React.ReactNode }) => 
   }, [studentResponse?.data, adminProfile?.profile, refetchStudent]);
 
   const value = {
-    studentData: studentResponse?.data?.student || null,
+    studentData: studentResponse?.data || null,
     isLoading,
     error: error as Error | null,
-    refetchStudent
+    refetchStudent,
   };
 
   return (
-    <StudentContext.Provider value={value}>
-      {children}
-    </StudentContext.Provider>
+    <StudentContext.Provider value={value}>{children}</StudentContext.Provider>
   );
 };
 

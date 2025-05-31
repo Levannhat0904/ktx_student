@@ -30,8 +30,8 @@ import contractApi from "@/api/contract";
 import { Contract } from "@/types/student";
 import { useStudent } from "@/contexts/StudentContext";
 import ContractPreview from "@/components/molecules/ContractPreview";
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import studentApi from "@/api/student";
 
 const { Content } = Layout;
@@ -46,7 +46,6 @@ const ContractPage: React.FC = () => {
   const { studentData } = useStudent();
   const [loading, setLoading] = useState(true);
   const [contracts, setContracts] = useState<Contract[]>([]);
-  console.log("contracts", contracts)
   const [selectedContract, setSelectedContract] = useState<Contract | null>(
     null
   );
@@ -60,12 +59,12 @@ const ContractPage: React.FC = () => {
       try {
         setLoading(true);
         setAllTimelineLoading(true);
-        if (studentData?.id) {
+        if (studentData?.student?.id) {
           // Fetch contracts for the student
-          const response = await contractApi.getContractsByStudent(studentData.id);
+          const response = await contractApi.getContractsByStudent(
+            studentData.student.id
+          );
           setContracts(response.data || []);
-
-       
         }
       } catch (error) {
         console.error("Error fetching contracts:", error);
@@ -80,18 +79,21 @@ const ContractPage: React.FC = () => {
   }, [studentData]);
   useEffect(() => {
     const fetchTimeline = async () => {
-      if(contracts){
-       
-          const timelineResponse = await studentApi.getActivityLogs('contract', contracts[0]?.roomId);
-         
-          const sortedTimeline = timelineResponse.data.data.logs.sort(
-            (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-          setAllTimelineData(sortedTimeline || []);
+      if (contracts) {
+        const timelineResponse = await studentApi.getActivityLogs(
+          "contract",
+          contracts[0]?.roomId
+        );
+
+        const sortedTimeline = timelineResponse.data.data.logs.sort(
+          (a: any, b: any) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setAllTimelineData(sortedTimeline || []);
       }
-    }
+    };
     fetchTimeline();
-  }, [contracts])
+  }, [contracts]);
 
   const handleViewContractDetail = async (contractId: number) => {
     try {
@@ -121,15 +123,22 @@ const ContractPage: React.FC = () => {
 
       const imgWidth = 210; // A4 width in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgWidth, imgHeight);
-      
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        0,
+        0,
+        imgWidth,
+        imgHeight
+      );
+
       pdf.save(`hop-dong-${selectedContract.contractNumber}.pdf`);
-      message.success('Tải hợp đồng thành công!');
+      message.success("Tải hợp đồng thành công!");
     } catch (error) {
-      console.error('Error downloading contract:', error);
-      message.error('Không thể tải hợp đồng. Vui lòng thử lại sau.');
+      console.error("Error downloading contract:", error);
+      message.error("Không thể tải hợp đồng. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
@@ -204,27 +213,27 @@ const ContractPage: React.FC = () => {
 
   const getTimelineItemColor = (action: string) => {
     switch (action) {
-      case 'create':
-        return 'green';
-      case 'update':
-        return 'blue';
-      case 'delete':
-        return 'red';
-      case 'status_change':
-        return 'orange';
+      case "create":
+        return "green";
+      case "update":
+        return "blue";
+      case "delete":
+        return "red";
+      case "status_change":
+        return "orange";
       default:
-        return 'gray';
+        return "gray";
     }
   };
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -287,7 +296,7 @@ const ContractPage: React.FC = () => {
                           <div>
                             <strong>{item.userName}</strong>
                             <p>{item.description}</p>
-                            <p style={{ fontSize: '12px', color: '#888' }}>
+                            <p style={{ fontSize: "12px", color: "#888" }}>
                               {formatTimestamp(item.createdAt)}
                             </p>
                           </div>
@@ -355,7 +364,8 @@ const ContractPage: React.FC = () => {
                       : ""}
                   </Descriptions.Item>
                   <Descriptions.Item label="Tiền đặt cọc">
-                    {selectedContract.depositAmount?.toLocaleString("vi-VN")} VNĐ
+                    {selectedContract.depositAmount?.toLocaleString("vi-VN")}{" "}
+                    VNĐ
                   </Descriptions.Item>
                   <Descriptions.Item label="Phí hàng tháng">
                     {selectedContract.monthlyFee?.toLocaleString("vi-VN")} VNĐ
@@ -399,7 +409,7 @@ const ContractPage: React.FC = () => {
                       <div>
                         <strong>{item.userName}</strong>
                         <p>{item.description}</p>
-                        <p style={{ fontSize: '12px', color: '#888' }}>
+                        <p style={{ fontSize: "12px", color: "#888" }}>
                           {formatTimestamp(item.createdAt)}
                         </p>
                       </div>
@@ -437,13 +447,13 @@ const ContractPage: React.FC = () => {
             {selectedContract && studentData && (
               <ContractPreview
                 contractData={{
-                  contractNumber: selectedContract.contractNumber || '',
-                  studentName: studentData.fullName || '',
-                  studentId: studentData.studentId || '',
-                  roomNumber: selectedContract.roomNumber || '',
-                  buildingName: selectedContract.buildingName || '',
-                  startDate: selectedContract.startDate || '',
-                  endDate: selectedContract.endDate || '',
+                  contractNumber: selectedContract.contractNumber || "",
+                  studentName: studentData?.student?.fullName || "",
+                  studentId: studentData?.student?.studentId || "",
+                  roomNumber: selectedContract.roomNumber || "",
+                  buildingName: selectedContract.buildingName || "",
+                  startDate: selectedContract.startDate || "",
+                  endDate: selectedContract.endDate || "",
                   depositAmount: selectedContract.depositAmount || 0,
                   monthlyFee: selectedContract.monthlyFee || 0,
                 }}

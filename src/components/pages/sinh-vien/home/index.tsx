@@ -55,15 +55,16 @@ import {
 } from "@/types/student";
 import useFetchProfile from "@/hooks/profile/useFetchProfile";
 import MaintenanceDetailModal from "../bao-tri/components/MaintenanceDetailModal";
+import { useStudent } from "@/contexts/StudentContext";
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
 
 const StudentHomePage = () => {
   const { adminProfile: user } = useAuth();
+  const { studentData } = useStudent();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [studentData, setStudentData] = useState<Student | null>(null);
   const [selectedRequest, setSelectedRequest] =
     useState<MaintenanceRequest | null>(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
@@ -77,7 +78,6 @@ const StudentHomePage = () => {
   const [isMaintenanceModalVisible, setIsMaintenanceModalVisible] =
     useState(false);
   const [profileDrawerVisible, setProfileDrawerVisible] = useState(false);
-
   // Use React Query hooks for getting data
   const {
     data: studentDetail,
@@ -104,7 +104,6 @@ const StudentHomePage = () => {
   useEffect(() => {
     // When student data is loaded from the hook, update our state
     if (studentDetail?.success && studentDetail?.data) {
-      setStudentData(studentDetail.data.student || null);
       setRoomData(studentDetail.data.dormitory || null);
       setRoommates(studentDetail.data.roommates || []);
 
@@ -229,7 +228,7 @@ const StudentHomePage = () => {
         {/* Thông tin sinh viên */}
         <div className="relative">
           <StudentCard
-            student={user || null}
+            student={studentData?.student || null}
             onClick={() => setProfileDrawerVisible(true)}
           />
         </div>

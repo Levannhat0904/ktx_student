@@ -114,41 +114,47 @@ const studentApi = {
     const formData = new FormData();
 
     // Append tất cả các trường (trừ avatar) vào FormData
-    Object.keys(data).forEach(key => {
-      if (key !== 'avatarPath') {
+    Object.keys(data).forEach((key) => {
+      if (key !== "avatarPath") {
         formData.append(key, data[key]);
       }
     });
 
     // Xử lý file upload riêng
     if (data.avatarPath?.[0]?.originFileObj) {
-      formData.append('avatarPath', data.avatarPath[0].originFileObj);
+      formData.append("avatarPath", data.avatarPath[0].originFileObj);
     }
 
     const response = await publicAxios.post(`${API_URL}/student`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
   },
 
-  getAllStudents: async (params: GetStudentsParams = { page: 1, limit: 10 }): Promise<StudentListResponse> => {
+  getAllStudents: async (
+    params: GetStudentsParams = { page: 1, limit: 10 }
+  ): Promise<StudentListResponse> => {
     const response = await axiosClient.get(`${API_URL}/student`, {
       params: {
         page: params.page,
         limit: params.limit,
-        search: params.search
-      }
+        search: params.search,
+      },
     });
     return response.data;
   },
   activeStudent: async (studentId: string) => {
-    const response = await axiosClient.patch(`${API_URL}/student/${studentId}/activate`);
+    const response = await axiosClient.patch(
+      `${API_URL}/student/${studentId}/activate`
+    );
     return response.data;
   },
   rejectStudent: async (studentId: string) => {
-    const response = await axiosClient.patch(`${API_URL}/student/${studentId}/reject`);
+    const response = await axiosClient.patch(
+      `${API_URL}/student/${studentId}/reject`
+    );
     return response.data;
   },
 
@@ -157,70 +163,98 @@ const studentApi = {
     return response?.data?.data;
   },
 
-  getStudentDetailById: async (id: number): Promise<StudentDetailDataResponse> => {
+  getStudentDetailById: async (
+    id: number
+  ): Promise<StudentDetailDataResponse> => {
     try {
       console.log(`Fetching student detail for ID: ${id}`);
       const response = await axiosClient.get(`${API_URL}/student/${id}/detail`);
-      console.log('Student detail response:', response.data);
+      console.log("Student detail response:", response.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching student detail:', error);
+      console.error("Error fetching student detail:", error);
       throw error;
     }
   },
 
   getCurrentStudentDetail: async (): Promise<StudentDetailDataResponse> => {
     try {
-      console.log('Fetching current student detail');
-      const response = await axiosClient.get(`${API_URL}/student/current/detail`);
-      console.log('Current student detail response:', response.data);
+      console.log("Fetching current student detail");
+      const response = await axiosClient.get(
+        `${API_URL}/student/current/detail`
+      );
+      console.log("Current student detail response:", response.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching current student detail:', error);
+      console.error("Error fetching current student detail:", error);
       throw error;
     }
   },
 
-  updateStudentStatus: async (id: number, status: StudentStatusEnum): Promise<UpdateStatusResponse> => {
-    const response = await axiosClient.put(`${API_URL}/student/${id}/status`, { status });
+  updateStudentStatus: async (
+    id: number,
+    status: StudentStatusEnum
+  ): Promise<UpdateStatusResponse> => {
+    const response = await axiosClient.put(`${API_URL}/student/${id}/status`, {
+      status,
+    });
     return response.data;
   },
 
-  updateStudentDormitory: async (id: number, dormitoryData: any): Promise<{ success: boolean; message: string }> => {
-    const response = await axiosClient.put(`${API_URL}/student/${id}/dormitory`, dormitoryData);
+  updateStudentDormitory: async (
+    id: number,
+    dormitoryData: any
+  ): Promise<{ success: boolean; message: string }> => {
+    const response = await axiosClient.put(
+      `${API_URL}/student/${id}/dormitory`,
+      dormitoryData
+    );
     return response.data;
   },
 
-  updateStudentProfile: async (id: number, data: any): Promise<{ success: boolean; message: string }> => {
+  updateStudentProfile: async (
+    id: number,
+    data: any
+  ): Promise<{ success: boolean; message: string }> => {
     try {
-      const response = await axiosClient.put(`${API_URL}/student/${id}/profile`, data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axiosClient.put(
+        `${API_URL}/student/${id}/profile`,
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  getRoomMaintenanceRequests: async (roomId: number): Promise<MaintenanceRequestsResponse> => {
+  getRoomMaintenanceRequests: async (
+    roomId: number
+  ): Promise<MaintenanceRequestsResponse> => {
     try {
-      const response = await axiosClient.get(`${API_URL}/rooms/${roomId}/maintenance-requests`);
+      const response = await axiosClient.get(
+        `${API_URL}/rooms/${roomId}/maintenance-requests`
+      );
       return response.data;
     } catch (error) {
-      console.error('Error fetching maintenance requests:', error);
+      console.error("Error fetching maintenance requests:", error);
       throw error;
     }
   },
 
-  createMaintenanceRequest: async (data: any): Promise<{ success: boolean; message: string }> => {
+  createMaintenanceRequest: async (
+    data: any
+  ): Promise<{ success: boolean; message: string }> => {
     try {
       const formData = new FormData();
 
       // Append all fields to FormData
-      Object.keys(data).forEach(key => {
-        if (key !== 'images') {
+      Object.keys(data).forEach((key) => {
+        if (key !== "images") {
           formData.append(key, data[key]);
         }
       });
@@ -229,39 +263,50 @@ const studentApi = {
       if (data.images && data.images.length > 0) {
         data.images.forEach((file: any, index: number) => {
           if (file.originFileObj) {
-            formData.append('images', file.originFileObj);
+            formData.append("images", file.originFileObj);
           }
         });
       }
 
-      const response = await axiosClient.post(`${API_URL}/rooms/maintenance-requests`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axiosClient.post(
+        `${API_URL}/rooms/maintenance-requests`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       return response.data;
     } catch (error) {
-      console.error('Error creating maintenance request:', error);
+      console.error("Error creating maintenance request:", error);
       throw error;
     }
   },
 
-  cancelMaintenanceRequest: async (requestId: number): Promise<{ success: boolean; message: string }> => {
+  cancelMaintenanceRequest: async (
+    requestId: number
+  ): Promise<{ success: boolean; message: string }> => {
     try {
-      const response = await axiosClient.delete(`${API_URL}/rooms/maintenance-requests/${requestId}`);
+      const response = await axiosClient.delete(
+        `${API_URL}/rooms/maintenance-requests/${requestId}`
+      );
       return response.data;
     } catch (error) {
-      console.error('Error canceling maintenance request:', error);
+      console.error("Error canceling maintenance request:", error);
       throw error;
     }
   },
-  getActivityLogs: async (entityType: string, entityId?: number): Promise<ApiResponse<any>> => {
+  getActivityLogs: async (
+    entityType: string,
+    entityId?: number
+  ): Promise<ApiResponse<any>> => {
     const params = {
       entityType,
-      entityId
+      entityId,
     };
-    return axiosClient.get('/api/activity-logs', { params });
+    return axiosClient.get("/api/activity-logs", { params });
   },
 };
 export const useActiveStudent = (studentId: string) => {
@@ -281,25 +326,29 @@ export const useCreateStudentRegistration = () => {
     mutationFn: studentApi.createRegistration,
     onSuccess: (response) => {
       if (response.success) {
-        message.success('Đăng ký thành công, vui lòng chờ admin phê duyệt');
+        message.success("Đăng ký thành công, vui lòng chờ admin phê duyệt");
       }
     },
     onError: (error) => {
-      message.error('Đăng ký thất bại. Vui lòng thử lại');
+      message.error("Đăng ký thất bại. Vui lòng thử lại");
     },
   });
 };
 
-export const useGetStudents = (page: number = 1, limit: number = 10, search: string = "") => {
+export const useGetStudents = (
+  page: number = 1,
+  limit: number = 10,
+  search: string = ""
+) => {
   return useQuery({
-    queryKey: ['students', page, limit, search],
+    queryKey: ["students", page, limit, search],
     queryFn: () => studentApi.getAllStudents({ page, limit, search }),
   });
 };
 
 export const useGetStudentById = (id: number) => {
   return useQuery({
-    queryKey: ['student', id],
+    queryKey: ["student", id],
     queryFn: () => studentApi.getStudentById(id),
     enabled: !!id,
   });
@@ -307,7 +356,7 @@ export const useGetStudentById = (id: number) => {
 
 export const useGetStudentDetailById = (id: number) => {
   return useQuery({
-    queryKey: ['studentDetail', id],
+    queryKey: ["studentDetail", id],
     queryFn: () => studentApi.getStudentDetailById(id),
     enabled: !!id,
   });
@@ -315,7 +364,7 @@ export const useGetStudentDetailById = (id: number) => {
 
 export const useGetCurrentStudentDetail = () => {
   return useQuery({
-    queryKey: ['currentStudentDetail'],
+    queryKey: ["currentStudentDetail"],
     queryFn: () => studentApi.getCurrentStudentDetail(),
   });
 };
@@ -326,11 +375,11 @@ export const useUpdateStudentStatus = () => {
       studentApi.updateStudentStatus(id, status),
     onSuccess: (response) => {
       if (response.success) {
-        message.success('Cập nhật trạng thái thành công');
+        message.success("Cập nhật trạng thái thành công");
       }
     },
     onError: (error) => {
-      message.error('Cập nhật trạng thái thất bại. Vui lòng thử lại');
+      message.error("Cập nhật trạng thái thất bại. Vui lòng thử lại");
     },
   });
 };

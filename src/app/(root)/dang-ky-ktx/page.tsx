@@ -8,8 +8,8 @@ const RegisterDormitory = dynamic(
   }
 );
 
-const DangKyNoiTruPage: React.FC = () => {
+const DangKyKyTucXaPage: React.FC = () => {
   return <RegisterDormitory />;
 };
 
-export default DangKyNoiTruPage;
+export default DangKyKyTucXaPage;

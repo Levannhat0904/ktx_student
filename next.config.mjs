@@ -39,21 +39,13 @@ const nextConfig = {
     // Định nghĩa các route cần bảo vệ
     const protectedRoutes = [
       "/",
-      "/dang-ky-noi-tru",
-      "/quan-ly-sinh-vien",
-      "/quan-ly-don-dang-ky",
-      "/quan-ly-phong",
-      "/quan-ly-hoa-don",
-      "/quan-ly-ky-tuc-xa",
-      "/quan-ly-toa-nha",
-      "/tra-cuu-hoa-don",
-    ];
-    const studentRoutes = [
-      "/sinh-vien",
-      "/dang-ky-noi-tru",
-      "/quan-ly-don-dang-ky",
-      "/quan-ly-phong",
-      "/quan-ly-hoa-don",
+      // "/quan-ly-sinh-vien",
+      // "/quan-ly-don-dang-ky",
+      // "/quan-ly-phong",
+      // "/quan-ly-hoa-don",
+      // "/quan-ly-ky-tuc-xa",
+      // "/quan-ly-toa-nha",
+      // "/tra-cuu-hoa-don",
     ];
 
     // Tạo redirect rules cho login page

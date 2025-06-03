@@ -54,7 +54,7 @@ export const MEDIUM_IMAGE_SIZE = 160;
 
 export const DEFAULT_IMAGE_SIZE = 140;
 
-export const AUTH_ROUTES = [Routers.login, Routers.forgotPassword];
+export const AUTH_ROUTES = [Routers.login, Routers.forgotPassword, Routers.registerDormitory];
 
 export const SVG_NORMAL_OPACITY = 0.85;
 

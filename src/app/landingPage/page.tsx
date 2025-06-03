@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import {
   Button,
   Carousel,
@@ -9,36 +9,41 @@ import {
   Col,
   Statistic,
   Layout,
-  Menu,
   Form,
   Input,
-  Divider,
   Badge,
+  message,
 } from "antd";
 import {
-  HomeOutlined,
   UserOutlined,
-  BankOutlined,
   PhoneOutlined,
   MailOutlined,
   LockOutlined,
-  RightOutlined,
   CheckCircleOutlined,
-  CoffeeOutlined,
-  WifiOutlined,
-  EnvironmentOutlined,
   QuestionCircleOutlined,
   FireOutlined,
-  ThunderboltOutlined,
-  BookOutlined,
-  HeartOutlined,
 } from "@ant-design/icons";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import HeaderLandingPage from "@/components/organisms/HeaderLandingPage";
+import FooterLandingPage from "@/components/organisms/FooterLandingPage";
+import { LOGO_URL } from "@/constants/common";
+import BgMotion from "@/components/organisms/bgMotion";
 
-const { Header, Content, Footer } = Layout;
+const { Content } = Layout;
 const { Meta } = Card;
 
 export default function Home() {
+  const router = useRouter();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+  
+  const logoScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 0.7, 0.3]);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -46,75 +51,27 @@ export default function Home() {
     }
   };
 
+  const handleRegisterClick = () => {
+    router.push("/dang-ky-ktx");
+  };
+  const handleConsultClick = () => {
+    message.info("Chức năng đang phát triển!");
+  };
+
   return (
     <Layout className="min-h-screen">
       {/* Header với gradient màu và slide-in animation */}
-      <Header className="flex fixed top-0 left-0 right-0 items-center justify-between !p-5 md:!px-10 bg-gradient-to-r from-orange-600 to-yellow-500 shadow-md z-10">
-        {/* Logo - hiển thị trên cả mobile và desktop */}
-        <motion.div
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center"
-        >
-          <div className="text-xl md:text-2xl font-bold text-white">
-            KTX SINH VIÊN
-          </div>
-        </motion.div>
-
-        {/* Menu - chỉ hiển thị trên desktop */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="hidden md:flex gap-8 items-center"
-        >
-          <div
-            onClick={() => scrollToSection("home")}
-            className="bg-transparent text-white hover:bg-transparent border-yellow-500 cursor-pointer"
-          >
-            Trang chủ
-          </div>
-          <div
-            onClick={() => scrollToSection("about")}
-            className="bg-transparent text-white hover:bg-transparent border-yellow-500 cursor-pointer"
-          >
-            Giới thiệu
-          </div>
-          <div
-            onClick={() => scrollToSection("rooms")}
-            className="bg-transparent text-white hover:bg-transparent border-yellow-500 cursor-pointer"
-          >
-            Phòng ở
-          </div>
-          <div
-            onClick={() => scrollToSection("facilities")}
-            className="bg-transparent text-white hover:bg-transparent border-yellow-500 cursor-pointer"
-          >
-            Tiện ích
-          </div>
-          <div
-            onClick={() => scrollToSection("contact")}
-            className="bg-transparent text-white hover:bg-transparent border-yellow-500 cursor-pointer"
-          >
-            Liên hệ
-          </div>
-        </motion.div>
-
-        {/* Nút đăng nhập - hiển thị trên cả mobile và desktop */}
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            type="text"
-            size="large"
-            className="!bg-transparent !text-white hover:bg-transparent border-orange-500"
-          >
-            <span className="hidden md:inline">Đăng nhập</span>
-            <UserOutlined className="md:hidden" />
-          </Button>
-        </motion.div>
-      </Header>
+      <HeaderLandingPage />
 
       {/* Hero Section với fade-in animation */}
+      <motion.div
+        className="progress-bar bg-orange-600 fixed top-16 z-50 left-0 right-0 h-2 origin-left"
+        style={{ scaleX }}
+      />
+      
+      {/* Background logo that scales with scroll */}
+      <BgMotion />
+      
       <div id="home" className="relative mt-16 md:mt-16">
         <Carousel autoplay className="h-48 md:h-96">
           <div className="h-48 md:h-96 bg-blue-900 flex items-center justify-center text-white">
@@ -153,12 +110,14 @@ export default function Home() {
               type="primary"
               size="large"
               className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 border-0"
+              onClick={handleRegisterClick}
             >
               Đăng ký ngay
             </Button>
             <Button
               size="large"
               className="bg-white text-orange-600 hover:text-orange-700 hover:bg-gray-100"
+              onClick={() => scrollToSection("about")}
             >
               Tìm hiểu thêm
             </Button>
@@ -294,6 +253,7 @@ export default function Home() {
                       <Button
                         type="primary"
                         className="mt-4 w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 border-0"
+                        onClick={handleRegisterClick}
                       >
                         Xem chi tiết
                       </Button>
@@ -442,8 +402,9 @@ export default function Home() {
                           type="primary"
                           htmlType="submit"
                           className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 border-0 rounded-lg h-12 text-lg"
+                          onClick={handleConsultClick}
                         >
-                          Gửi đăng ký
+                          Tư vấn ngay
                         </Button>
                       </Form.Item>
                     </Form>
@@ -525,126 +486,7 @@ export default function Home() {
       </Content>
 
       {/* Footer với fade-in animation */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="bg-gradient-to-r from-orange-900 to-yellow-900 text-white"
-      >
-        <div className="max-w-7xl mx-auto py-8 px-4">
-          <Row gutter={[32, 24]}>
-            <Col xs={24} md={8}>
-              <h3 className="text-xl font-bold mb-4">KTX SINH VIÊN</h3>
-              <p className="text-gray-300 mb-4">
-                Môi trường sống lý tưởng cho sinh viên với đầy đủ tiện nghi và
-                dịch vụ hỗ trợ.
-              </p>
-              <div className="flex gap-4">
-                <Button
-                  shape="circle"
-                  icon={<i className="fab fa-facebook-f"></i>}
-                  className="bg-blue-600 text-white border-0 hover:bg-blue-700"
-                />
-                <Button
-                  shape="circle"
-                  icon={<i className="fab fa-twitter"></i>}
-                  className="bg-cyan-500 text-white border-0 hover:bg-cyan-600"
-                />
-                <Button
-                  shape="circle"
-                  icon={<i className="fab fa-instagram"></i>}
-                  className="bg-gradient-to-r from-pink-500 to-red-500 text-white border-0"
-                />
-              </div>
-            </Col>
-            <Col xs={24} md={8}>
-              <h3 className="text-xl font-bold mb-4">Liên kết nhanh</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
-                    Trang chủ
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
-                    Giới thiệu
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
-                    Loại phòng
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
-                    Tiện ích
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
-                    Quy định
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
-                    Liên hệ
-                  </a>
-                </li>
-              </ul>
-            </Col>
-            <Col xs={24} md={8}>
-              <h3 className="text-xl font-bold mb-4">Giờ làm việc</h3>
-              <p className="text-gray-300 mb-2">
-                Thứ Hai - Thứ Sáu: 8:00 - 17:00
-              </p>
-              <p className="text-gray-300 mb-2">Thứ Bảy: 8:00 - 12:00</p>
-              <p className="text-gray-300">Chủ Nhật: Đóng cửa</p>
-              <p className="text-gray-300 mt-4">
-                Văn phòng quản lý KTX luôn sẵn sàng hỗ trợ bạn.
-              </p>
-            </Col>
-          </Row>
-          <Divider className="border-yellow-800" />
-          <div className="text-center text-gray-300">
-            <p>
-              &copy; {new Date().getFullYear()} Ký túc xá Sinh viên. Bản quyền
-              thuộc về KTX Sinh viên.
-            </p>
-          </div>
-        </div>
-      </motion.footer>
-
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe">
-        <div className="flex justify-around items-center py-3 px-2">
-          {[
-            { icon: <HomeOutlined />, text: "Trang chủ", section: "home" },
-            { icon: <BankOutlined />, text: "Phòng ở", section: "rooms" },
-            {
-              icon: <CoffeeOutlined />,
-              text: "Tiện ích",
-              section: "facilities",
-            },
-            { icon: <PhoneOutlined />, text: "Liên hệ", section: "contact" },
-            { icon: <UserOutlined />, text: "Đăng ký", section: "register" },
-          ].map((item, index) => (
-            <motion.div
-              key={index}
-              onClick={() => scrollToSection(item.section)}
-              className="flex flex-col items-center w-16"
-              whileTap={{ scale: 0.9 }}
-            >
-              <div className="w-12 h-12 flex items-center justify-center rounded-full mb-1">
-                <span className="text-xl active:text-orange-500">
-                  {item.icon}
-                </span>
-              </div>
-              <span className="text-xs font-medium text-gray-600">
-                {item.text}
-              </span>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+      <FooterLandingPage />
     </Layout>
   );
 }

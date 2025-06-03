@@ -2,6 +2,7 @@ export enum Routers {
   home = "/",
   login = "/dang-nhap",
   forgotPassword = "/quen-mat-khau",
+  registerDormitory = "/dang-ky-ktx",
 }
 export enum RoutersStudent {
   home = "/sinh-vien",

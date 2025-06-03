@@ -34,6 +34,7 @@ import {
 import { useGetDistricts, useGetWards } from "@/api/administrative";
 import { FACULTY_OPTIONS, MAJOR_OPTIONS } from "@/constants/values";
 import { KInput } from "@/components/atoms";
+import { useRouter } from "next/navigation";
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -49,6 +50,7 @@ const StudentForm = () => {
   const { data: districts } = useGetDistricts(selectedProvince!);
   const { data: wards } = useGetWards(selectedProvince!, selectedDistrict!);
   const [selectedFaculty, setSelectedFaculty] = useState<string>();
+  const router = useRouter();
 
   const onFinish = (values: any) => {
     setLoading(true);
@@ -57,7 +59,13 @@ const StudentForm = () => {
       birthDate: values.birthDate.format("YYYY-MM-DD"),
       avatarPath: values.avatarPath,
     };
-    createStudentRegistration(payload);
+    createStudentRegistration(payload, {
+      onSuccess: () => {
+        form.resetFields();
+        setLoading(false);
+        router.push("/landingPage");
+      },
+    });
   };
 
   const normFile = (e: any) => {
@@ -446,7 +454,7 @@ const StudentForm = () => {
               <KButton
                 type="primary"
                 htmlType="submit"
-                // loading={loading}
+                loading={isPending}
                 className="bg-blue-600 hover:bg-blue-700 px-6 h-10 font-medium"
               >
                 Lưu thông tin

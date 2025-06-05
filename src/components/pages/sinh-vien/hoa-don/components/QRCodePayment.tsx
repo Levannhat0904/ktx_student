@@ -41,7 +41,7 @@ const QRCodePayment: React.FC<QRCodePaymentProps> = ({
 
   const formatCurrency = (amount?: number) => {
     if (!amount) return "0";
-    return amount.toLocaleString("vi-VN");
+    return Number(amount)?.toLocaleString("vi-VN");
   };
 
   const qrValue = generateQRCode(

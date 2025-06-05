@@ -84,7 +84,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
 
   const formatCurrency = (amount: number | undefined) => {
     if (!amount) return "0 VNĐ";
-    return amount.toLocaleString("vi-VN") + " VNĐ";
+    return Number(amount)?.toLocaleString("vi-VN") + " VNĐ";
   };
 
   const columns = [

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Typography, Space, Divider } from 'antd';
-import Image from 'next/image';
-import { LOGO_URL } from '@/constants';
+import React from "react";
+import { Typography, Space, Divider } from "antd";
+import Image from "next/image";
+import { LOGO_URL } from "@/constants";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -22,14 +22,14 @@ interface ContractPreviewProps {
 const ContractPreview: React.FC<ContractPreviewProps> = ({ contractData }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN');
+    return date.toLocaleDateString("vi-VN");
   };
 
   const formatCurrency = (amount: number) => {
-    return amount.toLocaleString('vi-VN');
+    return Number(amount)?.toLocaleString("vi-VN");
   };
 
-  const today = new Date().toLocaleDateString('vi-VN');
+  const today = new Date().toLocaleDateString("vi-VN");
 
   return (
     <div className="p-8 bg-white">
@@ -44,15 +44,25 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ contractData }) => {
             className="object-contain"
           />
           <div>
-            <Title level={4} className="!mb-0">KÝ TÚC XÁ SINH VIÊN</Title>
-            <Text className="text-gray-500">Đại Học Công Nghệ Giao Thông Vận Tải</Text>
+            <Title level={4} className="!mb-0">
+              KÝ TÚC XÁ SINH VIÊN
+            </Title>
+            <Text className="text-gray-500">
+              Đại Học Công Nghệ Giao Thông Vận Tải
+            </Text>
             <br />
-            <Text className="text-gray-500">Số 54, Triều Khúc, Thanh Xuân, Thành phố Hà Nội</Text>
+            <Text className="text-gray-500">
+              Số 54, Triều Khúc, Thanh Xuân, Thành phố Hà Nội
+            </Text>
           </div>
         </div>
         <div className="text-right">
-          <Title level={5} className="!mb-0">HỢP ĐỒNG THUÊ PHÒNG KTX</Title>
-          <Text className="text-gray-500">Số: {contractData.contractNumber}</Text>
+          <Title level={5} className="!mb-0">
+            HỢP ĐỒNG THUÊ PHÒNG KTX
+          </Title>
+          <Text className="text-gray-500">
+            Số: {contractData.contractNumber}
+          </Text>
         </div>
       </div>
 
@@ -66,15 +76,18 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ contractData }) => {
 
       {/* Contract Content */}
       <Paragraph>
-        Hôm nay, ngày {today}, tại Ký túc xá Đại học Công Nghệ Giao Thông Vận Tải, chúng tôi gồm:
+        Hôm nay, ngày {today}, tại Ký túc xá Đại học Công Nghệ Giao Thông Vận
+        Tải, chúng tôi gồm:
       </Paragraph>
 
       {/* Party A */}
       <div className="mb-6">
         <Title level={5}>BÊN A: ĐẠI DIỆN KÝ TÚC XÁ (Bên cho thuê)</Title>
         <div className="pl-8">
-          <Text>Họ và tên: Nguyễn Văn A</Text><br />
-          <Text>Chức vụ: Giám đốc Trung tâm Phục vụ Sinh viên</Text><br />
+          <Text>Họ và tên: Nguyễn Văn A</Text>
+          <br />
+          <Text>Chức vụ: Giám đốc Trung tâm Phục vụ Sinh viên</Text>
+          <br />
           <Text>Điện thoại: 0292 123 456</Text>
         </div>
       </div>
@@ -83,9 +96,13 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ contractData }) => {
       <div className="mb-6">
         <Title level={5}>BÊN B: NGƯỜI THUÊ</Title>
         <div className="pl-8">
-          <Text>Họ và tên: {contractData.studentName}</Text><br />
-          <Text>MSSV: {contractData.studentId}</Text><br />
-          <Text>Phòng: {contractData.roomNumber} - {contractData.buildingName}</Text>
+          <Text>Họ và tên: {contractData.studentName}</Text>
+          <br />
+          <Text>MSSV: {contractData.studentId}</Text>
+          <br />
+          <Text>
+            Phòng: {contractData.roomNumber} - {contractData.buildingName}
+          </Text>
         </div>
       </div>
 
@@ -93,12 +110,27 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ contractData }) => {
       <div className="mb-6">
         <Title level={5}>NỘI DUNG HỢP ĐỒNG</Title>
         <div className="pl-8">
-          <Text>1. Thời hạn thuê phòng:</Text><br />
-          <Text className="pl-4">- Từ ngày: {formatDate(contractData.startDate)}</Text><br />
-          <Text className="pl-4">- Đến ngày: {formatDate(contractData.endDate)}</Text><br />
-          <Text>2. Giá thuê và phí dịch vụ:</Text><br />
-          <Text className="pl-4">- Tiền đặt cọc: {formatCurrency(contractData.depositAmount)} VNĐ</Text><br />
-          <Text className="pl-4">- Phí thuê hàng tháng: {formatCurrency(contractData.monthlyFee)} VNĐ</Text>
+          <Text>1. Thời hạn thuê phòng:</Text>
+          <br />
+          <Text className="pl-4">
+            - Từ ngày: {formatDate(contractData.startDate)}
+          </Text>
+          <br />
+          <Text className="pl-4">
+            - Đến ngày: {formatDate(contractData.endDate)}
+          </Text>
+          <br />
+          <Text>2. Giá thuê và phí dịch vụ:</Text>
+          <br />
+          <Text className="pl-4">
+            - Tiền đặt cọc: {formatCurrency(Number(contractData.depositAmount))}{" "}
+            VNĐ
+          </Text>
+          <br />
+          <Text className="pl-4">
+            - Phí thuê hàng tháng:{" "}
+            {formatCurrency(Number(contractData.monthlyFee))} VNĐ
+          </Text>
         </div>
       </div>
 
@@ -106,9 +138,12 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ contractData }) => {
       <div className="mb-6">
         <Title level={5}>ĐIỀU KHOẢN CHUNG</Title>
         <div className="pl-8">
-          <Text>1. Bên B cam kết tuân thủ đầy đủ nội quy KTX.</Text><br />
-          <Text>2. Đóng phí đúng hạn trước ngày 05 hàng tháng.</Text><br />
-          <Text>3. Giữ gìn tài sản và báo hỏng kịp thời.</Text><br />
+          <Text>1. Bên B cam kết tuân thủ đầy đủ nội quy KTX.</Text>
+          <br />
+          <Text>2. Đóng phí đúng hạn trước ngày 05 hàng tháng.</Text>
+          <br />
+          <Text>3. Giữ gìn tài sản và báo hỏng kịp thời.</Text>
+          <br />
           <Text>4. Không được tự ý chuyển nhượng hoặc cho thuê lại.</Text>
         </div>
       </div>
@@ -128,4 +163,4 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ contractData }) => {
   );
 };
 
-export default ContractPreview; 
+export default ContractPreview;

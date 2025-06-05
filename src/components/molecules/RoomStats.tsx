@@ -1,6 +1,10 @@
 import React from "react";
 import { Card, Typography } from "antd";
-import { TeamOutlined, DollarOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+  TeamOutlined,
+  DollarOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 
 const { Text } = Typography;
 
@@ -37,7 +41,7 @@ const RoomStats: React.FC<RoomStatsProps> = ({
           <div className="flex items-center gap-2 ">
             <DollarOutlined className="text-xl text-green-600" />
             <Text className="text-2xl font-semibold text-green-600">
-              {pricePerMonth.toLocaleString("vi-VN")} VNĐ
+              {Number(pricePerMonth)?.toLocaleString("vi-VN")} VNĐ
             </Text>
           </div>
         </div>
@@ -55,4 +59,4 @@ const RoomStats: React.FC<RoomStatsProps> = ({
   );
 };
 
-export default RoomStats; 
+export default RoomStats;

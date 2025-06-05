@@ -364,11 +364,16 @@ const ContractPage: React.FC = () => {
                       : ""}
                   </Descriptions.Item>
                   <Descriptions.Item label="Tiền đặt cọc">
-                    {selectedContract.depositAmount?.toLocaleString("vi-VN")}{" "}
+                    {Number(selectedContract.depositAmount)?.toLocaleString(
+                      "vi-VN"
+                    )}{" "}
                     VNĐ
                   </Descriptions.Item>
                   <Descriptions.Item label="Phí hàng tháng">
-                    {selectedContract.monthlyFee?.toLocaleString("vi-VN")} VNĐ
+                    {Number(selectedContract.monthlyFee)?.toLocaleString(
+                      "vi-VN"
+                    )}{" "}
+                    VNĐ
                   </Descriptions.Item>
                   <Descriptions.Item label="Trạng thái">
                     <Tag color={getStatusColor(selectedContract.status || "")}>

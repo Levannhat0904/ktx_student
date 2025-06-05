@@ -45,3 +45,4 @@ export const widthSuffixesSelect = 166;
 
 export const DEBOUNCE_TIME_700 = 700;
 export const PLACEHOLDER_DEFAULT = "Tìm kiếm";
+

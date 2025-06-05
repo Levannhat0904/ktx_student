@@ -38,7 +38,7 @@ const nextConfig = {
 
     // Định nghĩa các route cần bảo vệ
     const protectedRoutes = [
-      "/",
+      "/sinh-vien",
       // "/quan-ly-sinh-vien",
       // "/quan-ly-don-dang-ky",
       // "/quan-ly-phong",
@@ -53,7 +53,7 @@ const nextConfig = {
       source: "/dang-nhap",
       has: [{ type: "cookie", key: KTX_STUDENT_ACCESS_TOKEN }],
       permanent: false,
-      destination: "/",
+      destination: "/sinh-vien",
     };
 
     // Tạo redirect rules cho các protected routes

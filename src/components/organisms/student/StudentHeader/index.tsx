@@ -14,7 +14,7 @@ import {
   IdcardOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import StudentProfileDrawer from "../StudentProfileDrawer";
 import Image from "next/image";
@@ -43,6 +43,7 @@ const StudentHeader: React.FC = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  const router = useRouter();
 
   const menuItems: MenuItem[] = [
     {
@@ -84,7 +85,7 @@ const StudentHeader: React.FC = () => {
           key: "profile",
           label: "Hồ sơ cá nhân",
           icon: <UserOutlined />,
-          onClick: () => setProfileDrawerVisible(true),
+          onClick: () => router.push("/sinh-vien"),
         },
         {
           key: "edit",
@@ -126,7 +127,7 @@ const StudentHeader: React.FC = () => {
         <div className="flex justify-between items-center h-full">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/sinh-vien" className="flex items-center">
+            <Link href="/" className="flex items-center">
               <Image
                 src={LOGO_URL}
                 alt="KTX Logo"

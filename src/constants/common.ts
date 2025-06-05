@@ -1,8 +1,4 @@
-import {
-  IconWeightType,
-  StatusEnum,
-  Routers,
-} from "./enums";
+import { IconWeightType, StatusEnum, Routers } from "./enums";
 
 export const DEFAULT_ERROR_MESSAGE = "Đã xảy ra lỗi!";
 
@@ -54,7 +50,12 @@ export const MEDIUM_IMAGE_SIZE = 160;
 
 export const DEFAULT_IMAGE_SIZE = 140;
 
-export const AUTH_ROUTES = [Routers.login, Routers.forgotPassword, Routers.registerDormitory];
+export const AUTH_ROUTES = [
+  Routers.login,
+  Routers.forgotPassword,
+  Routers.registerDormitory,
+  Routers.home,
+];
 
 export const SVG_NORMAL_OPACITY = 0.85;
 
@@ -86,7 +87,6 @@ export const SHOW_TIME_FORMAT = "HH:mm";
 export const SEARCH_DEBOUNCE_TIME = 500;
 
 export const FALSE_STRING = "false";
-
 
 export const createInformationSection = (data: any, fields: any) => {
   return fields.map(({ label, key, value, isDomain }: any) => {

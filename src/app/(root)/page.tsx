@@ -23,7 +23,7 @@ import {
   Badge,
   message,
   Avatar,
-  } from "antd";
+} from "antd";
 import {
   UserOutlined,
   PhoneOutlined,
@@ -43,7 +43,14 @@ import HeaderLandingPage from "@/components/organisms/HeaderLandingPage";
 import FooterLandingPage from "@/components/organisms/FooterLandingPage";
 import { LOGO_URL } from "@/constants/common";
 import BgMotion from "@/components/organisms/bgMotion";
-import { CONTACT_CONTENT, FAQ_CONTENT, FEATURE_CONTENT, ROOM_CONTENT, SECURITY_CONTENT, STATISTIC_CONTENT } from "@/components/organisms/landingPage/Security";
+import {
+  CONTACT_CONTENT,
+  FAQ_CONTENT,
+  FEATURE_CONTENT,
+  ROOM_CONTENT,
+  SECURITY_CONTENT,
+  STATISTIC_CONTENT,
+} from "@/components/organisms/landingPage/Security";
 import { sendMail } from "@/api/sendmail";
 
 const { Content } = Layout;
@@ -74,7 +81,7 @@ export default function Home() {
     name: string,
     email: string,
     phone: string,
-    roomType: string,
+    roomType: string
   ) => {
     setLoading(true);
     const payload = {
@@ -87,7 +94,12 @@ export default function Home() {
       html: `<h1>Đăng ký tư vấn phòng KTX</h1><p>Tên: ${name}</p><p>Email: ${email}</p><p>Số điện thoại: ${phone}</p><p>Loại phòng: ${roomType}</p>`,
     };
     try {
-      const result = await sendMail(payload.to, payload.subject, payload.text, payload.html);
+      const result = await sendMail(
+        payload.to,
+        payload.subject,
+        payload.text,
+        payload.html
+      );
       console.log(result);
       message.success("Đăng ký tư vấn thành công!");
       form.resetFields();
@@ -113,7 +125,7 @@ export default function Home() {
       {/* Background logo that scales with scroll */}
       <BgMotion />
 
-      <div id="home" className="relative mt-16 md:mt-16">
+      <div id="home" className="relative ">
         <Carousel autoplay className="h-48 md:h-96">
           <div className="h-48 md:h-96 bg-blue-900 flex items-center justify-center text-white">
             <Image
@@ -190,7 +202,10 @@ export default function Home() {
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: Number(index.title) * 0.2 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: Number(index.title) * 0.2,
+                  }}
                   whileHover={{ scale: 1.05 }}
                 >
                   <Card className="h-full hover:shadow-lg transition-shadow border-t-4 border-orange-500">
@@ -198,13 +213,15 @@ export default function Home() {
                       {/* <div className="inline-block p-4 rounded-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white mb-4">
                         {index.icon}
                       </div> */}
-                      <Avatar icon={index.icon} size={48} className="!bg-gradient-to-r from-orange-500 to-yellow-500 text-white mb-4" />
+                      <Avatar
+                        icon={index.icon}
+                        size={48}
+                        className="!bg-gradient-to-r from-orange-500 to-yellow-500 text-white mb-4"
+                      />
                       <h3 className="text-xl font-bold text-orange-600">
                         {index.title}
                       </h3>
-                      <p className="text-gray-600">
-                        {index.description}
-                      </p>
+                      <p className="text-gray-600">{index.description}</p>
                     </div>
                   </Card>
                 </motion.div>
@@ -217,9 +234,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="bg-gradient-to-r from-orange-600 to-yellow-500 text-white rounded-xl p-8 mb-16 shadow-xl"
+            className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-xl p-8 mb-16 shadow-xl"
           >
-            <h3 className="text-2xl font-bold mb-6 text-center">Thống kê KTX</h3>
+            <h3 className="text-2xl font-bold mb-6 text-center">
+              Thống kê KTX
+            </h3>
             <Row gutter={[32, 32]}>
               {STATISTIC_CONTENT.map((stat, index) => (
                 <Col xs={24} sm={12} md={6} key={index}>
@@ -228,14 +247,20 @@ export default function Home() {
                     transition={{ type: "spring", stiffness: 300 }}
                     className="text-center p-4 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm"
                   >
-                    <div className="text-4xl mb-3">
-                      {stat.icon}
-                    </div>
+                    <div className="text-4xl mb-3">{stat.icon}</div>
                     <Statistic
-                      title={<span className="text-white font-medium text-lg">{stat.title}</span>}
+                      title={
+                        <span className="text-white font-medium text-lg">
+                          {stat.title}
+                        </span>
+                      }
                       value={stat.value}
                       className="text-white"
-                      valueStyle={{ color: "white", fontSize: "1rem", fontWeight: "bold" }}
+                      valueStyle={{
+                        color: "white",
+                        fontSize: "1rem",
+                        fontWeight: "bold",
+                      }}
                     />
                     <div className="mt-2 h-1 w-16 bg-white mx-auto rounded-full"></div>
                   </motion.div>
@@ -358,9 +383,7 @@ export default function Home() {
                     <h3 className="text-xl font-bold text-orange-600">
                       {index.title}
                     </h3>
-                    <p className="text-gray-600">
-                      {index.description}
-                    </p>
+                    <p className="text-gray-600">{index.description}</p>
                   </Card>
                 </motion.div>
               </Col>
@@ -402,7 +425,18 @@ export default function Home() {
                 </Col>
                 <Col xs={24} md={12}>
                   <Card className="border-0 shadow-lg">
-                    <Form layout="vertical" form={form} onFinish={(values) => handleConsultClick(values.name, values.email, values.phone, values.roomType)}>
+                    <Form
+                      layout="vertical"
+                      form={form}
+                      onFinish={(values) =>
+                        handleConsultClick(
+                          values.name,
+                          values.email,
+                          values.phone,
+                          values.roomType
+                        )
+                      }
+                    >
                       <Form.Item
                         label="Họ và tên"
                         name="name"
@@ -480,7 +514,7 @@ export default function Home() {
             Câu hỏi thường gặp
           </motion.h2>
           <Row gutter={[16, 16]}>
-              {FAQ_CONTENT.map((index, indexFAQ) => (
+            {FAQ_CONTENT.map((index, indexFAQ) => (
               <Col xs={24} md={12} key={indexFAQ}>
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
@@ -493,9 +527,7 @@ export default function Home() {
                       <QuestionCircleOutlined className="text-orange-500 mr-2" />{" "}
                       {index.title}
                     </h3>
-                    <p className="text-gray-600">
-                      {index.description}
-                    </p>
+                    <p className="text-gray-600">{index.description}</p>
                   </Card>
                 </motion.div>
               </Col>
@@ -522,7 +554,7 @@ export default function Home() {
                   >
                     <Card className="text-center h-full hover:shadow-xl transition-shadow bg-gradient-to-b from-white to-orange-50 border-0">
                       <div className="inline-block p-4 rounded-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white mb-4">
-                      {index.icon}
+                        {index.icon}
                       </div>
                       <h3 className="text-xl font-bold mb-2 text-orange-600">
                         {index.title}

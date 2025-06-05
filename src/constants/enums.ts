@@ -129,11 +129,9 @@ export const enum RadioOptionTypeEnum {
   BUTTON = "button",
 }
 
-
 export enum SuffixType {
   select = "select",
 }
-
 
 export enum AttachmentTypeEnum {
   video = "video",

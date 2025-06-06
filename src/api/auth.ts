@@ -129,4 +129,21 @@ export const useLogout = () => {
   });
 };
 
+// Thêm API quên mật khẩu
+export const forgotPassword = async (email: string) => {
+  const response = await axiosClient.post(`${API_URL}/auth/forgot-password`, {
+    email,
+  });
+  return response.data;
+};
+
+// Thêm API reset mật khẩu
+export const resetPassword = async (token: string, password: string) => {
+  const response = await axiosClient.post(`${API_URL}/auth/reset-password`, {
+    token,
+    password,
+  });
+  return response.data;
+};
+
 export default authApi;

@@ -35,6 +35,7 @@ import { useGetDistricts, useGetWards } from "@/api/administrative";
 import { FACULTY_OPTIONS, MAJOR_OPTIONS } from "@/constants/values";
 import { KInput } from "@/components/atoms";
 import { useRouter } from "next/navigation";
+import { sendMail } from "@/api/sendmail";
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -59,11 +60,22 @@ const StudentForm = () => {
       birthDate: values.birthDate.format("YYYY-MM-DD"),
       avatarPath: values.avatarPath,
     };
+    const to = {
+      Email: payload.email,
+      Name: payload.fullName,
+    };
+    const subject = "Đăng ký thông tin sinh viên";
+    const text = "Đăng ký thông tin sinh viên";
+    const html = `<h1>Đăng ký thông tin sinh viên</h1>
+    <span>Chúc mừng bạn ${payload.fullName} đã đăng ký nội trú ký túc xá thành công!. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.</span>
+    `;
     createStudentRegistration(payload, {
       onSuccess: () => {
         form.resetFields();
+        // send mail to admin
+        sendMail(to, subject, text, html);
         setLoading(false);
-        router.push("/landingPage");
+        router.push("/");
       },
     });
   };

@@ -160,7 +160,7 @@ export interface MaintenanceRequest {
   description?: string;
   imagePaths?: string[];
   priority?: "low" | "normal" | "high" | "urgent";
-  status?: "pending" | "processing" | "completed" | "rejected";
+  status?: "pending" | "processing" | "completed" | "rejected" | "canceled";
   createdAt?: string;
   resolvedAt?: string;
   resolutionNote?: string;

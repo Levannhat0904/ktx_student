@@ -98,7 +98,6 @@ const MaintenancePage: React.FC = () => {
         cancelText: "Hủy",
         onOk: async () => {
           await cancelRequestMutation.mutateAsync(requestId);
-          message.success("Hủy yêu cầu bảo trì thành công");
           // Refresh danh sách
           refetch();
         },
@@ -119,7 +118,6 @@ const MaintenancePage: React.FC = () => {
 
   const handleFormSuccess = () => {
     setIsFormVisible(false);
-    message.success("Yêu cầu bảo trì đã được gửi thành công!");
     // Refresh the list
     refetch();
   };

@@ -95,13 +95,13 @@ const InvoicePage: React.FC = () => {
           invoice.paymentStatus === "pending" ||
           invoice.paymentStatus === "overdue"
         ) {
-          unpaid += invoice.totalAmount || 0;
-        } else if (invoice.paymentStatus === "paid") {
-          paid += invoice.totalAmount || 0;
+          unpaid += Number(invoice.totalAmount) || 0;
+        } else {
+          paid += Number(invoice.totalAmount) || 0;
         }
       });
-      setTotalUnpaid(unpaid);
-      setTotalPaid(paid);
+      setTotalUnpaid(Number(unpaid));
+      setTotalPaid(Number(paid));
     } else if (isError) {
       console.error("Error fetching invoices:", error);
       message.error("Không thể tải thông tin hóa đơn");
@@ -114,7 +114,11 @@ const InvoicePage: React.FC = () => {
         try {
           const timelineResponse = await studentApi.getActivityLogs(
             "invoice",
-            invoices[0]?.id
+            undefined,
+            // pending. để suy nghĩ thêm
+            invoices[0]?.roomId,
+            undefined,
+            undefined
           );
           if (
             timelineResponse.data.success &&
@@ -364,7 +368,7 @@ const InvoicePage: React.FC = () => {
                           color: "#096dd9",
                         }}
                       >
-                        {Number(totalPaid).toLocaleString("vi-VN")} VNĐ
+                        {totalPaid.toLocaleString("vi-VN")} VNĐ
                       </div>
                     </Col>
                   </Row>

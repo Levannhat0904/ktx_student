@@ -1,9 +1,9 @@
-import axiosClient from './axiosClient';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { message } from 'antd';
+import axiosClient from "./axiosClient";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { message } from "antd";
 
 // We need to match the exact API URL structure in the backend
-const API_URL = '/api';
+const API_URL = "/api";
 
 export interface Invoice {
   id: number;
@@ -18,7 +18,7 @@ export interface Invoice {
   waterFee: number;
   serviceFee: number;
   totalAmount: number;
-  paymentStatus: 'pending' | 'paid' | 'overdue' | 'waiting_for_approval';
+  paymentStatus: "pending" | "paid" | "overdue" | "waiting_for_approval";
   paymentDate?: string;
   paymentMethod?: string;
   createdAt: string;
@@ -92,7 +92,7 @@ const invoiceApi = {
   }): Promise<InvoiceResponse> => {
     try {
       const response = await axiosClient.get(`${API_URL}/invoices`, {
-        params
+        params,
       });
       return response.data;
     } catch (error) {
@@ -106,16 +106,18 @@ const invoiceApi = {
             total: 0,
             page: 1,
             limit: 10,
-            totalPages: 0
-          }
-        }
+            totalPages: 0,
+          },
+        },
       };
     }
   },
 
   // Get invoices by room
   getInvoicesByRoom: async (roomId: number): Promise<InvoiceResponse> => {
-    const response = await axiosClient.get(`${API_URL}/rooms/${roomId}/invoices`);
+    const response = await axiosClient.get(
+      `${API_URL}/rooms/${roomId}/invoices`
+    );
     return response.data;
   },
 
@@ -126,25 +128,44 @@ const invoiceApi = {
   },
 
   // Create new invoice
-  createInvoice: async (roomId: number, invoiceData: any): Promise<InvoiceDetailResponse> => {
-    const response = await axiosClient.post(`${API_URL}/rooms/${roomId}/invoices`, invoiceData);
+  createInvoice: async (
+    roomId: number,
+    invoiceData: any
+  ): Promise<InvoiceDetailResponse> => {
+    const response = await axiosClient.post(
+      `${API_URL}/rooms/${roomId}/invoices`,
+      invoiceData
+    );
     return response.data;
   },
 
   // Update invoice (Not currently implemented in the backend)
-  updateInvoice: async (id: number, invoiceData: any): Promise<InvoiceDetailResponse> => {
-    const response = await axiosClient.patch(`${API_URL}/invoices/${id}`, invoiceData);
+  updateInvoice: async (
+    id: number,
+    invoiceData: any
+  ): Promise<InvoiceDetailResponse> => {
+    const response = await axiosClient.patch(
+      `${API_URL}/invoices/${id}`,
+      invoiceData
+    );
     return response.data;
   },
 
   // Update invoice status
-  updateInvoiceStatus: async (id: number, status: string): Promise<InvoiceDetailResponse> => {
-    const response = await axiosClient.put(`${API_URL}/invoices/${id}/status`, { status });
+  updateInvoiceStatus: async (
+    id: number,
+    status: string
+  ): Promise<InvoiceDetailResponse> => {
+    const response = await axiosClient.put(`${API_URL}/invoices/${id}/status`, {
+      status,
+    });
     return response.data;
   },
 
   // Delete invoice
-  deleteInvoice: async (id: number): Promise<{ success: boolean; message: string }> => {
+  deleteInvoice: async (
+    id: number
+  ): Promise<{ success: boolean; message: string }> => {
     const response = await axiosClient.delete(`${API_URL}/invoices/${id}`);
     return response.data;
   },
@@ -158,9 +179,12 @@ const invoiceApi = {
     limit?: number;
   }): Promise<InvoiceResponse> => {
     try {
-      const response = await axiosClient.get(`${API_URL}/public/invoices/search`, {
-        params
-      });
+      const response = await axiosClient.get(
+        `${API_URL}/public/invoices/search`,
+        {
+          params,
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Error searching invoices:", error);
@@ -173,47 +197,57 @@ const invoiceApi = {
             total: 0,
             page: 1,
             limit: 10,
-            totalPages: 0
-          }
-        }
+            totalPages: 0,
+          },
+        },
       };
     }
   },
 
   // Get student codes for select component
-  getStudentCodes: async (search?: string): Promise<{
+  getStudentCodes: async (
+    search?: string
+  ): Promise<{
     success: boolean;
-    data: Array<{ value: string; label: string; id: number; }>;
+    data: Array<{ value: string; label: string; id: number }>;
   }> => {
     try {
-      const response = await axiosClient.get(`${API_URL}/public/students/codes`, {
-        params: { search }
-      });
+      const response = await axiosClient.get(
+        `${API_URL}/public/students/codes`,
+        {
+          params: { search },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching student codes:", error);
       return {
         success: false,
-        data: []
+        data: [],
       };
     }
   },
 
   // Get room numbers for select component
-  getRoomNumbers: async (search?: string): Promise<{
+  getRoomNumbers: async (
+    search?: string
+  ): Promise<{
     success: boolean;
-    data: Array<{ value: string; label: string; id: number; }>;
+    data: Array<{ value: string; label: string; id: number }>;
   }> => {
     try {
-      const response = await axiosClient.get(`${API_URL}/public/rooms/numbers`, {
-        params: { search }
-      });
+      const response = await axiosClient.get(
+        `${API_URL}/public/rooms/numbers`,
+        {
+          params: { search },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching room numbers:", error);
       return {
         success: false,
-        data: []
+        data: [],
       };
     }
   },
@@ -221,7 +255,9 @@ const invoiceApi = {
   // Get invoices by student
   getInvoicesByStudent: async (studentId: number): Promise<InvoiceResponse> => {
     try {
-      const response = await axiosClient.get(`${API_URL}/students/${studentId}/invoices`);
+      const response = await axiosClient.get(
+        `${API_URL}/students/${studentId}/invoices`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching student invoices:", error);
@@ -234,9 +270,9 @@ const invoiceApi = {
             total: 0,
             page: 1,
             limit: 10,
-            totalPages: 0
-          }
-        }
+            totalPages: 0,
+          },
+        },
       };
     }
   },
@@ -244,7 +280,9 @@ const invoiceApi = {
   // Get current student's invoices
   getCurrentStudentInvoices: async (): Promise<InvoiceResponse> => {
     try {
-      const response = await axiosClient.get(`${API_URL}/student/current/invoices`);
+      const response = await axiosClient.get(
+        `${API_URL}/student/current/invoices`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching current student invoices:", error);
@@ -257,49 +295,56 @@ const invoiceApi = {
             total: 0,
             page: 1,
             limit: 10,
-            totalPages: 0
-          }
-        }
+            totalPages: 0,
+          },
+        },
       };
     }
   },
 
   // Submit payment for an invoice
-  submitPayment: async (invoiceId: number, paymentMethod: string): Promise<PaymentResponse> => {
+  submitPayment: async (
+    invoiceId: number,
+    paymentMethod: string
+  ): Promise<PaymentResponse> => {
     try {
-      const response = await axiosClient.post(`${API_URL}/invoices/${invoiceId}/payment`, { 
-        paymentMethod 
-      });
+      const response = await axiosClient.post(
+        `${API_URL}/invoices/${invoiceId}/payment`,
+        {
+          paymentMethod,
+        }
+      );
       return response.data;
     } catch (error: any) {
       console.error("Error submitting payment:", error);
       return {
         success: false,
-        message: error.response?.data?.message || "Lỗi khi gửi yêu cầu thanh toán"
+        message:
+          error.response?.data?.message || "Lỗi khi gửi yêu cầu thanh toán",
       };
     }
   },
 };
 
 // React Query hooks
-export const useGetStudentInvoices = (studentId: number) => {
+export const useGetStudentInvoices = (roomId: number) => {
   return useQuery({
-    queryKey: ['studentInvoices', studentId],
-    queryFn: () => invoiceApi.getInvoicesByStudent(studentId),
-    enabled: !!studentId,
+    queryKey: ["studentInvoices", roomId],
+    queryFn: () => invoiceApi.getInvoicesByStudent(roomId),
+    enabled: !!roomId,
   });
 };
 
 export const useGetCurrentStudentInvoices = () => {
   return useQuery({
-    queryKey: ['currentStudentInvoices'],
+    queryKey: ["currentStudentInvoices"],
     queryFn: invoiceApi.getCurrentStudentInvoices,
   });
 };
 
 export const useGetInvoiceById = (invoiceId: number) => {
   return useQuery({
-    queryKey: ['invoice', invoiceId],
+    queryKey: ["invoice", invoiceId],
     queryFn: () => invoiceApi.getInvoiceById(invoiceId),
     enabled: !!invoiceId,
   });
@@ -307,23 +352,23 @@ export const useGetInvoiceById = (invoiceId: number) => {
 
 export const useSubmitInvoicePayment = () => {
   return useMutation<
-    PaymentResponse, 
+    PaymentResponse,
     Error,
     { invoiceId: number; paymentMethod: string }
   >({
-    mutationFn: ({ invoiceId, paymentMethod }) => 
+    mutationFn: ({ invoiceId, paymentMethod }) =>
       invoiceApi.submitPayment(invoiceId, paymentMethod),
     onSuccess: (data) => {
       if (data.success) {
-        message.success(data.message || 'Gửi yêu cầu thanh toán thành công');
+        message.success(data.message || "Gửi yêu cầu thanh toán thành công");
       } else {
-        message.error(data.message || 'Gửi yêu cầu thất bại');
+        message.error(data.message || "Gửi yêu cầu thất bại");
       }
     },
     onError: (error) => {
-      message.error(error.message || 'Lỗi khi gửi yêu cầu thanh toán');
-    }
+      message.error(error.message || "Lỗi khi gửi yêu cầu thanh toán");
+    },
   });
 };
 
-export default invoiceApi; 
+export default invoiceApi;

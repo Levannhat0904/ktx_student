@@ -24,6 +24,7 @@ const RoomDetailPage = () => {
         // Fetch activity logs for all contracts
         const timelineResponse = await studentApi.getActivityLogs(
           "room",
+          undefined,
           roomData.room.id
         );
 

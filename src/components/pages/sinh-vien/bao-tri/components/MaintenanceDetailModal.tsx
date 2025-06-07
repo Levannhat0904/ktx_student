@@ -86,7 +86,11 @@ const MaintenanceDetailModal: React.FC<MaintenanceDetailModalProps> = ({
               ? "blue"
               : request.status === "completed"
               ? "green"
-              : "red"
+              : request.status === "canceled"
+              ? "red"
+              : request.status === "rejected"
+              ? "red"
+              : "green"
           }
         >
           {request.status === "pending"
@@ -95,6 +99,8 @@ const MaintenanceDetailModal: React.FC<MaintenanceDetailModalProps> = ({
             ? "Đang xử lý"
             : request.status === "completed"
             ? "Hoàn thành"
+            : request.status === "canceled"
+            ? "Đã hủy"
             : "Từ chối"}
         </Tag>
       ),

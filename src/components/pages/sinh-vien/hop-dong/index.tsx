@@ -44,6 +44,7 @@ const { TabPane } = Tabs;
  */
 const ContractPage: React.FC = () => {
   const { studentData } = useStudent();
+  console.log("studentData", studentData);
   const [loading, setLoading] = useState(true);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [selectedContract, setSelectedContract] = useState<Contract | null>(
@@ -82,7 +83,10 @@ const ContractPage: React.FC = () => {
       if (contracts) {
         const timelineResponse = await studentApi.getActivityLogs(
           "contract",
-          contracts[0]?.roomId
+          undefined,
+          undefined,
+          undefined,
+          contracts[0]?.id
         );
 
         const sortedTimeline = timelineResponse.data.data.logs.sort(

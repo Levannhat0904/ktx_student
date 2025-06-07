@@ -1,16 +1,16 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { message } from 'antd';
-import axiosClient, { publicAxios } from './axiosClient';
-import axios from 'axios';
-import { StudentStatusEnum } from '@/constants/enums';
-import { Student, MaintenanceRequest } from '@/types/student';
-const API_URL = 'http://localhost:3000/api';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { message } from "antd";
+import axiosClient, { publicAxios } from "./axiosClient";
+import axios from "axios";
+import { StudentStatusEnum } from "@/constants/enums";
+import { Student, MaintenanceRequest } from "@/types/student";
+const API_URL = "http://localhost:3000/api";
 interface StudentRegistration {
   email: string;
   studentCode: string;
   fullName: string;
   birthDate: string;
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   phone: string;
   province: string;
   district: string;
@@ -110,7 +110,9 @@ interface MaintenanceRequestsResponse {
 }
 
 const studentApi = {
-  createRegistration: async (data: any): Promise<StudentRegistrationResponse> => {
+  createRegistration: async (
+    data: any
+  ): Promise<StudentRegistrationResponse> => {
     const formData = new FormData();
 
     // Append tất cả các trường (trừ avatar) vào FormData
@@ -300,11 +302,19 @@ const studentApi = {
   },
   getActivityLogs: async (
     entityType: string,
-    entityId?: number
+    entityId?: number,
+    roomId?: number,
+    invoiceId?: number,
+    contractId?: number,
+    studentId?: number
   ): Promise<ApiResponse<any>> => {
     const params = {
       entityType,
       entityId,
+      roomId,
+      invoiceId,
+      contractId,
+      studentId,
     };
     return axiosClient.get("/api/activity-logs", { params });
   },
@@ -390,11 +400,11 @@ export const useUpdateStudentDormitory = () => {
       studentApi.updateStudentDormitory(id, data),
     onSuccess: (response) => {
       if (response.success) {
-        message.success('Cập nhật thông tin phòng ở thành công');
+        message.success("Cập nhật thông tin phòng ở thành công");
       }
     },
     onError: (error) => {
-      message.error('Cập nhật thông tin phòng ở thất bại. Vui lòng thử lại');
+      message.error("Cập nhật thông tin phòng ở thất bại. Vui lòng thử lại");
     },
   });
 };
@@ -405,18 +415,18 @@ export const useUpdateStudentProfile = () => {
       studentApi.updateStudentProfile(id, data),
     onSuccess: (response) => {
       if (response.success) {
-        message.success('Cập nhật thông tin cá nhân thành công');
+        message.success("Cập nhật thông tin cá nhân thành công");
       }
     },
     onError: (error) => {
-      message.error('Cập nhật thông tin cá nhân thất bại. Vui lòng thử lại');
+      message.error("Cập nhật thông tin cá nhân thất bại. Vui lòng thử lại");
     },
   });
 };
 
 export const useGetRoomMaintenanceRequests = (roomId: number) => {
   return useQuery({
-    queryKey: ['maintenanceRequests', roomId],
+    queryKey: ["maintenanceRequests", roomId],
     queryFn: () => studentApi.getRoomMaintenanceRequests(roomId),
     enabled: !!roomId,
   });
@@ -427,25 +437,26 @@ export const useCreateMaintenanceRequest = () => {
     mutationFn: studentApi.createMaintenanceRequest,
     onSuccess: (response) => {
       if (response.success) {
-        message.success('Yêu cầu bảo trì đã được gửi thành công');
+        message.success("Yêu cầu bảo trì đã được gửi thành công");
       }
     },
     onError: (error) => {
-      message.error('Gửi yêu cầu bảo trì thất bại. Vui lòng thử lại');
+      message.error("Gửi yêu cầu bảo trì thất bại. Vui lòng thử lại");
     },
   });
 };
 
 export const useCancelMaintenanceRequest = () => {
   return useMutation({
-    mutationFn: (requestId: number) => studentApi.cancelMaintenanceRequest(requestId),
+    mutationFn: (requestId: number) =>
+      studentApi.cancelMaintenanceRequest(requestId),
     onSuccess: (response) => {
       if (response.success) {
-        message.success('Đã hủy yêu cầu bảo trì');
+        message.success("Đã hủy yêu cầu bảo trì");
       }
     },
     onError: (error) => {
-      message.error('Không thể hủy yêu cầu. Vui lòng thử lại sau');
+      message.error("Không thể hủy yêu cầu. Vui lòng thử lại sau");
     },
   });
 };

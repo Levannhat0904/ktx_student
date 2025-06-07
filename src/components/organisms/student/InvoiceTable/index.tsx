@@ -143,6 +143,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                 background: "#fa8c16",
                 borderColor: "#fa8c16",
               }}
+              disabled={record.paymentStatus === "waiting_for_approval"}
               onClick={() => handlePayInvoice(record.id)}
             >
               Thanh toán

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Avatar, Button, Dropdown, Layout, Menu } from "antd";
-import { UserOutlined, EditOutlined, LogoutOutlined } from "@ant-design/icons";
+import { UserOutlined, EditOutlined, LogoutOutlined, LockOutlined } from "@ant-design/icons";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -90,6 +90,12 @@ const HeaderLandingPage = () => {
           label: "Chỉnh sửa thông tin",
           icon: <EditOutlined />,
           onClick: () => setProfileDrawerVisible(true),
+        },
+        {
+          key: "change-password",
+          label: "Đổi mật khẩu",
+          icon: <LockOutlined />,
+          onClick: () => router.push("/sinh-vien/doi-mat-khau"),
         },
         {
           key: "logout",

@@ -69,7 +69,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ roomData, onRegisterRoom }) => {
             {roomData.bedNumber || "Chưa cập nhật"}
           </Descriptions.Item>
           <Descriptions.Item label="Giá thuê hàng tháng">
-            {formatCurrency(Number(roomData.monthlyFee))} VNĐ
+            {formatCurrency(Number(roomData?.monthlyFee || 0))} VNĐ
           </Descriptions.Item>
           <Descriptions.Item label="Ngày vào">
             {roomData.checkInDate

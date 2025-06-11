@@ -6,6 +6,7 @@ import {
   Row,
   Col,
   Divider,
+  Avatar,
 } from "antd";
 import {
   HomeOutlined,
@@ -13,14 +14,43 @@ import {
   BankOutlined,
   PhoneOutlined,
   CoffeeOutlined,
+  FacebookOutlined,
+  InstagramOutlined,
+  TwitterOutlined,
 } from "@ant-design/icons";
+import { useRouter } from 'next/navigation';
 
 const FooterLandingPage = () => {
+    const router = useRouter();
     const scrollToSection = (sectionId: string) => {
       const element = document.getElementById(sectionId);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
+    };
+    const handleHomeClick = () => {
+
+        scrollToSection("home");
+    };
+    const handleAboutClick = () => {
+
+        scrollToSection("about");
+    };
+    const handleRoomsClick = () => {
+
+        scrollToSection("rooms");
+    };
+    const handleFacilitiesClick = () => {
+
+        scrollToSection("facilities");
+    };
+    const handleContactClick = () => {
+
+        scrollToSection("contact");
+    };
+
+    const handleLoginClick = () => {
+      router.push("/dang-nhap");
     };
   return (
     <>
@@ -39,20 +69,22 @@ const FooterLandingPage = () => {
                 dịch vụ hỗ trợ.
               </p>
               <div className="flex gap-4">
-                <Button
+                {/* <Button
                   shape="circle"
                   icon={<i className="fab fa-facebook-f"></i>}
                   className="bg-blue-600 text-white border-0 hover:bg-blue-700"
+                /> */}
+                <Avatar
+                  icon={<FacebookOutlined className="!text-blue-600" />}
+                  className="!bg-white"
                 />
-                <Button
-                  shape="circle"
-                  icon={<i className="fab fa-twitter"></i>}
-                  className="bg-cyan-500 text-white border-0 hover:bg-cyan-600"
+                <Avatar
+                  icon={<InstagramOutlined className="!text-pink-500" />}
+                  className="!bg-white"
                 />
-                <Button
-                  shape="circle"
-                  icon={<i className="fab fa-instagram"></i>}
-                  className="bg-gradient-to-r from-pink-500 to-red-500 text-white border-0"
+                <Avatar
+                  icon={<PhoneOutlined className="!text-blue-500" />}
+                  className="!bg-white"
                 />
               </div>
             </Col>
@@ -60,32 +92,50 @@ const FooterLandingPage = () => {
               <h3 className="text-xl font-bold mb-4">Liên kết nhanh</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
+                  <a
+                    onClick={handleHomeClick}
+                    className="text-gray-300 hover:text-white"
+                  >
                     Trang chủ
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
+                  <a
+                    onClick={handleAboutClick}
+                    className="text-gray-300 hover:text-white"
+                  >
                     Giới thiệu
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
+                  <a
+                    onClick={handleRoomsClick}
+                    className="text-gray-300 hover:text-white"
+                  >
                     Loại phòng
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
+                  <a
+                    onClick={handleFacilitiesClick}
+                    className="text-gray-300 hover:text-white"
+                  >
                     Tiện ích
                   </a>
                 </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
+                {/* <li>
+                  <a
+                    onClick={handleContactClick}
+                    className="text-gray-300 hover:text-white"
+                  >
                     Quy định
                   </a>
-                </li>
+                </li> */}
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
+                  <a
+                    onClick={handleContactClick}
+                    className="text-gray-300 hover:text-white"
+                  >
                     Liên hệ
                   </a>
                 </li>

@@ -12,6 +12,7 @@ import {
   LogoutOutlined,
   EditOutlined,
   IdcardOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -104,6 +105,12 @@ const StudentHeader: React.FC = () => {
             }
           },
         },
+        {
+          key: "change-password",
+          label: "Đổi mật khẩu",
+          icon: <LockOutlined />,
+          onClick: () => router.push("/sinh-vien/doi-mat-khau"),
+        }
       ]}
     />
   );

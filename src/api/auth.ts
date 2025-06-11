@@ -146,4 +146,13 @@ export const resetPassword = async (token: string, password: string) => {
   return response.data;
 };
 
+// Thêm API đổi mật khẩu cho sinh viên
+export const changePassword = async (currentPassword: string, newPassword: string) => {
+  const response = await axiosClient.post(`${API_URL}/auth/change-password`, {
+    currentPassword,
+    newPassword,
+  });
+  return response.data;
+};
+
 export default authApi;

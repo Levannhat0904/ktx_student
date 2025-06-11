@@ -33,7 +33,7 @@ export const STATISTIC_CONTENT = [
     icon: <HomeOutlined />,
   },
   {
-    title: "Số lượng phòng",
+    title: "Phòng chất lượng cao",
     value: "5★ - Đánh giá chất lượng",
     icon: <StarOutlined />,
   },

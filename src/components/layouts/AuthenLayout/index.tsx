@@ -3,10 +3,11 @@ import React, { ReactNode } from "react";
 
 type Props = {
   children: ReactNode;
+  isFooter?: Boolean
 };
 
 export default function AuthenLayout(props: Props) {
-  const { children } = props;
+  const { children, isFooter = true } = props;
   return (
     <div className="bg-login_bg bg-cover bg-center bg-no-repeat w-full h-screen overflow-y-scroll min-h-screen md:pb-7 pb-2 flex flex-col items-center">
       <div className="flex-1 w-full flex items-center">
@@ -15,9 +16,10 @@ export default function AuthenLayout(props: Props) {
           {children}
         </div>
       </div>
-      <span className="font-averta text-base font-normal leading-6 text-white text-center">
+      {isFooter&&<span className="font-averta text-base font-normal leading-6 text-white text-center">
         Phát triển bởi Lê Văn Nhật
       </span>
+      }
     </div>
   );
 }

@@ -215,7 +215,7 @@ export const formatCurrency = (amount = 0, shortSymbol = true) => {
     currencyDisplay: shortSymbol ? undefined : "code",
   })
     .format(amount)
-    .replaceAll(shortSymbol ? "₫" : "", shortSymbol ? "đ" : "");
+    .replaceAll(shortSymbol ? "₫" : "", shortSymbol ? "" : "");
 };
 
 export const generateRandomSixDigits = () => {

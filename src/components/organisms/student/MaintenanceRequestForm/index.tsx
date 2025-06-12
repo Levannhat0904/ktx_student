@@ -83,11 +83,11 @@ const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
     if (!isJpgOrPng) {
       message.error("Chỉ có thể tải lên file JPG/PNG!");
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error("Hình ảnh phải nhỏ hơn 2MB!");
+    const isLt10M = file.size / 1024 / 1024 < 10;
+    if (!isLt10M) {
+      message.error("Hình ảnh phải nhỏ hơn 10MB!");
     }
-    return isJpgOrPng && isLt2M;
+    return isJpgOrPng && isLt10M;
   };
 
   const onFinish = async (values: any) => {

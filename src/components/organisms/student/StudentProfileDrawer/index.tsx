@@ -37,7 +37,7 @@ import { ACCEPT_IMAGE_FILE } from "@/constants";
 import { UploadChangeParam } from "antd/es/upload";
 import Image from "next/image";
 import { RcFile } from "antd/es/upload";
-import { fileToBase64 } from "@/utils/common";
+import { convertToJpg, fileToBase64 } from "@/utils/common";
 import { LOGO_URL } from "../../../../constants/common";
 import { KInput } from "@/components/atoms";
 import {
@@ -116,7 +116,8 @@ const StudentProfileDrawer: React.FC<StudentProfileDrawerProps> = ({
       console.log(fileAvatar);
 
       if (fileAvatar) {
-        formData.append("avatarPath", fileAvatar as any);
+        const jpgFile = await convertToJpg(fileAvatar as any);
+        formData.append("avatarPath", jpgFile as any);
       }
 
       Object.keys(values).forEach((key) => {

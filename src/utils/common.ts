@@ -237,10 +237,54 @@ export const generateQRCode = (
     case "TECHCOMBANK":
       return `https://img.vietqr.io/image/TCB-5409042003-print.png?amount=${amount}-print&addInfo=${description}&accountName="LE VAN NHAT"`;
     case "CAKE":
-      return `https://img.vietqr.io/image/CAKE-5409042003-print.png?amount=${amount}-print&addInfo=${description}&accountName="LE VAN NHAT"`;
+      return `https://img.vietqr.io/image/CAKE-0397968663-print.png?amount=${amount}-print&addInfo=${description}&accountName="LE VAN NHAT"`;
     default:
-      return "https://img.vietqr.io/image/CAKE-5409042003-print.png";
+      return "https://img.vietqr.io/image/CAKE-0397968663-print.png";
   }
 
   // https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<DESCRIPTION>&accountName=<ACCOUNT_NAME>
+};
+export const convertToJpg = (
+  file: File,
+  width?: number,
+  height?: number,
+  quality: number = 0.8
+): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = width || img.width;
+        canvas.height = height || img.height;
+
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const newFile = new File(
+                [blob],
+                file.name.replace(/\.\w+$/, ".jpg"),
+                {
+                  type: "image/jpeg",
+                }
+              );
+              resolve(newFile);
+            } else {
+              reject(new Error("Không thể chuyển đổi ảnh sang JPG"));
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => reject(new Error("Không thể tải ảnh"));
+    };
+    reader.onerror = () => reject(new Error("Không thể đọc file"));
+    reader.readAsDataURL(file);
+  });
 };

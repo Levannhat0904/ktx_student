@@ -48,10 +48,6 @@ const MaintenancePage: React.FC = () => {
   const { data: studentData, isLoading: isLoadingStudent } =
     useGetCurrentStudentDetail();
 
-  // Add debug logs
-  console.log("User context:", user);
-  console.log("Student data:", studentData);
-  console.log("Room ID:", roomId);
 
   // Effect to extract roomId from student data
   useEffect(() => {
@@ -67,9 +63,6 @@ const MaintenancePage: React.FC = () => {
     isLoading: isLoadingRequests,
     refetch,
   } = useGetRoomMaintenanceRequests(roomId || 0);
-
-  // Add more debug logs
-  console.log("API response:", maintenanceData);
 
   // Use real cancel request mutation
   const cancelRequestMutation = useCancelMaintenanceRequest();

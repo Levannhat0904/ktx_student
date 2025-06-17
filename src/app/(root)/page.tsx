@@ -1,12 +1,4 @@
-// import StudentHomePage from "@/components/pages/sinh-vien/home";
 
-// export default function Home() {
-//   return (
-//     <main>
-//       <StudentHomePage />
-//     </main>
-//   );
-// }
 "use client";
 import React, { useState } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";

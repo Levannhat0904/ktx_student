@@ -305,7 +305,7 @@ const studentApi = {
     entityId?: number,
     roomId?: number,
     invoiceId?: number,
-    contractId?: number,
+    contractId?: number | number[],
     studentId?: number
   ): Promise<ApiResponse<any>> => {
     const params = {
@@ -315,6 +315,7 @@ const studentApi = {
       invoiceId,
       contractId,
       studentId,
+      isStudentView: true,
     };
     return axiosClient.get("/api/activity-logs", { params });
   },

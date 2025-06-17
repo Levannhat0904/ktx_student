@@ -130,23 +130,42 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
       ),
     },
     {
-      title: "Hành độngg",
+      title: "Ngày TT",
+      dataIndex: "paymentDate",
+      key: "paymentDate",
+      width: 130,
+      render: (date: string) => formatDate(date),
+    },
+    {
+      title: "Hành động",
       key: "action",
       fixed: isMobile ? undefined : ("left" as const),
-      width: 200,
+      width: 250,
       render: (_: any, record: Invoice) => (
         <Space size="middle">
           {record.paymentStatus !== "paid" && (
             <Button
-              type="primary"
+              type={
+                record.paymentStatus === "waiting_for_approval"
+                  ? "dashed"
+                  : "primary"
+              }
               style={{
-                background: "#fa8c16",
-                borderColor: "#fa8c16",
+                background:
+                  record.paymentStatus === "waiting_for_approval"
+                    ? ""
+                    : "#fa8c16",
+                borderColor:
+                  record.paymentStatus === "waiting_for_approval"
+                    ? ""
+                    : "#fa8c16",
               }}
               disabled={record.paymentStatus === "waiting_for_approval"}
               onClick={() => handlePayInvoice(record.id)}
             >
-              Thanh toán
+              {record.paymentStatus === "waiting_for_approval"
+                ? "Đang chờ duyệt"
+                : "Thanh toán"}
             </Button>
           )}
           <Button

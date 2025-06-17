@@ -55,6 +55,40 @@ const ContractPage: React.FC = () => {
   const [allTimelineData, setAllTimelineData] = useState<any[]>([]);
   const [allTimelineLoading, setAllTimelineLoading] = useState(false);
   const contractRef = useRef<HTMLDivElement>(null);
+
+  // Hàm lấy timeline cho tất cả các hợp đồng
+  const fetchAllContractsTimeline = async () => {
+    if (contracts && contracts.length > 0) {
+      setAllTimelineLoading(true);
+      try {
+        // Lấy các ID của tất cả hợp đồng
+        const contractIds = contracts.map(contract => contract.id).filter(id => id !== undefined);
+        
+        // Gọi API để lấy timeline cho tất cả hợp đồng
+        if (contractIds.length > 0) {
+          const timelineResponse = await studentApi.getActivityLogs(
+            "contract",
+            undefined,
+            undefined,
+            undefined,
+            contractIds
+          );
+
+          const sortedTimeline = timelineResponse.data.data.logs.sort(
+            (a: any, b: any) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          setAllTimelineData(sortedTimeline || []);
+        }
+      } catch (error) {
+        console.error("Error fetching timeline:", error);
+        message.error("Không thể tải lịch sử hoạt động");
+      } finally {
+        setAllTimelineLoading(false);
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchContracts = async () => {
       try {
@@ -72,39 +106,41 @@ const ContractPage: React.FC = () => {
         message.error("Không thể tải thông tin hợp đồng");
       } finally {
         setLoading(false);
-        setAllTimelineLoading(false);
       }
     };
 
     fetchContracts();
   }, [studentData]);
-  useEffect(() => {
-    const fetchTimeline = async () => {
-      if (contracts) {
-        const timelineResponse = await studentApi.getActivityLogs(
-          "contract",
-          undefined,
-          undefined,
-          undefined,
-          contracts[0]?.id
-        );
 
-        const sortedTimeline = timelineResponse.data.data.logs.sort(
-          (a: any, b: any) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        setAllTimelineData(sortedTimeline || []);
-      }
-    };
-    fetchTimeline();
+  useEffect(() => {
+    // Khi danh sách hợp đồng thay đổi, fetch timeline cho tất cả hợp đồng
+    fetchAllContractsTimeline();
   }, [contracts]);
 
+  // Cập nhật timeline khi chọn hợp đồng mới
   const handleViewContractDetail = async (contractId: number) => {
     try {
       setLoading(true);
       // Fetch contract details
       const response = await contractApi.getContractById(contractId);
       setSelectedContract(response.data);
+      
+      // Fetch timeline cho hợp đồng được chọn
+      const timelineResponse = await studentApi.getActivityLogs(
+        "contract",
+        undefined,
+        undefined,
+        undefined,
+        contractId,
+        undefined
+      );
+      
+      const sortedTimeline = timelineResponse.data.data.logs.sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setAllTimelineData(sortedTimeline || []);
+      
       setIsModalVisible(true);
     } catch (error) {
       console.error("Error fetching contract details:", error);
@@ -112,6 +148,13 @@ const ContractPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Hàm đóng modal và hiển thị timeline cho tất cả hợp đồng
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSelectedContract(null);
+    fetchAllContractsTimeline();
   };
 
   const handleDownloadContract = async () => {
@@ -266,8 +309,9 @@ const ContractPage: React.FC = () => {
                 }
                 key="active"
               >
-                {activeContracts.length > 0 ? (
-                  activeContracts.map((contract) => (
+                {/* activeContracts */}
+                {contracts.length > 0 ? (
+                  contracts.map((contract) => (
                     <ContractItem key={contract.id} contract={contract} />
                   ))
                 ) : (
@@ -319,12 +363,12 @@ const ContractPage: React.FC = () => {
         <Modal
           title={`Chi tiết hợp đồng #${selectedContract?.contractNumber}`}
           open={isModalVisible}
-          onCancel={() => setIsModalVisible(false)}
+          onCancel={handleCloseModal}
           footer={[
             <Button key="preview" onClick={() => setIsPreviewVisible(true)}>
               Xem hợp đồng
             </Button>,
-            <Button key="close" onClick={() => setIsModalVisible(false)}>
+            <Button key="close" onClick={handleCloseModal}>
               Đóng
             </Button>,
             <Button

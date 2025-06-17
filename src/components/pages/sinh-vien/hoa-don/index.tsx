@@ -221,13 +221,13 @@ const InvoicePage: React.FC = () => {
       key: "paymentDate",
       width: isMobile ? 100 : 120,
       render: (date: string) =>
-        date ? new Date(date).toLocaleDateString("vi-VN") : "-",
+        date ? new Date(date).toLocaleDateString("vi-VN") : "",
     },
     {
       title: "Hành động",
       key: "action",
       fixed: isMobile ? undefined : ("right" as const),
-      width: isMobile ? 140 : 160,
+      width: isMobile ? 150 : 210,
       render: (_: any, record: Invoice) => (
         <Space size="small">
           {(record.paymentStatus === "pending" ||
@@ -245,7 +245,7 @@ const InvoicePage: React.FC = () => {
           )}
           {record.paymentStatus === "waiting_for_approval" && (
             <Button type="dashed" size="small" disabled>
-              Đang xử lý
+              Đang chờ duyệt
             </Button>
           )}
           <Button size="small" onClick={() => handleViewDetail(record.id || 0)}>

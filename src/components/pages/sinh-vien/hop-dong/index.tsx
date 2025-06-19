@@ -371,15 +371,15 @@ const ContractPage: React.FC = () => {
             <Button key="close" onClick={handleCloseModal}>
               Đóng
             </Button>,
-            <Button
-              key="download"
-              type="primary"
-              style={{ background: "#fa8c16", borderColor: "#fa8c16" }}
-              onClick={handleDownloadContract}
-              loading={loading}
-            >
-              <FilePdfOutlined /> Tải hợp đồng
-            </Button>,
+            // <Button
+            //   key="download"
+            //   type="primary"
+            //   style={{ background: "#fa8c16", borderColor: "#fa8c16" }}
+            //   onClick={handleDownloadContract}
+            //   loading={loading}
+            // >
+            //   <FilePdfOutlined /> Tải hợp đồng
+            // </Button>,
           ]}
           width={800}
         >
@@ -509,6 +509,7 @@ const ContractPage: React.FC = () => {
                   endDate: selectedContract.endDate || "",
                   depositAmount: selectedContract.depositAmount || 0,
                   monthlyFee: selectedContract.monthlyFee || 0,
+                  studentCode: studentData?.student?.studentCode || "",
                 }}
               />
             )}

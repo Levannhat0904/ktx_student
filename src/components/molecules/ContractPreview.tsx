@@ -16,6 +16,7 @@ interface ContractPreviewProps {
     endDate: string;
     depositAmount: number;
     monthlyFee: number;
+    studentCode: string;
   };
 }
 
@@ -98,7 +99,7 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ contractData }) => {
         <div className="pl-8">
           <Text>Họ và tên: {contractData.studentName}</Text>
           <br />
-          <Text>MSSV: {contractData.studentId}</Text>
+          <Text>MSSV: {contractData.studentCode}</Text>
           <br />
           <Text>
             Phòng: {contractData.roomNumber} - {contractData.buildingName}

@@ -13,6 +13,7 @@ import {
   Col,
   Card,
   Divider,
+  AutoComplete,
 } from "antd";
 import {
   UploadOutlined,
@@ -378,20 +379,22 @@ const StudentForm = () => {
                 name="faculty"
                 rules={[{ required: true, message: "Vui lòng chọn khoa!" }]}
               >
-                <Select
+                <AutoComplete
                   className="!rounded-lg !sbody-code !h-12 w-full"
-                  showSearch
                   placeholder="Chọn khoa"
                   onChange={handleFacultyChange}
-                  filterOption={filterOption}
-                  optionFilterProp="children"
-                >
-                  {FACULTY_OPTIONS.map((faculty: any) => (
-                    <Option key={faculty.value} value={faculty.value}>
-                      {faculty.label}
-                    </Option>
-                  ))}
-                </Select>
+                  options={FACULTY_OPTIONS.map((faculty: any) => ({
+                    value: faculty.value,
+                    label: faculty.label,
+                  }))}
+                  filterOption={(inputValue, option) =>
+                    option
+                      ? option.label
+                          .toLowerCase()
+                          .includes(inputValue.toLowerCase())
+                      : false
+                  }
+                />
               </Form.Item>
             </Col>
 
@@ -403,21 +406,26 @@ const StudentForm = () => {
                   { required: true, message: "Vui lòng chọn chuyên ngành!" },
                 ]}
               >
-                <Select
+                <AutoComplete
                   className="!rounded-lg !sbody-code !h-12 w-full"
-                  showSearch
                   placeholder="Chọn chuyên ngành"
                   disabled={!selectedFaculty}
-                  filterOption={filterOption}
-                  optionFilterProp="children"
-                >
-                  {selectedFaculty &&
-                    MAJOR_OPTIONS[selectedFaculty]?.map((major) => (
-                      <Option key={major.value} value={major.value}>
-                        {major.label}
-                      </Option>
-                    ))}
-                </Select>
+                  options={
+                    selectedFaculty
+                      ? MAJOR_OPTIONS[selectedFaculty]?.map((major) => ({
+                          value: major.value,
+                          label: major.label,
+                        }))
+                      : []
+                  }
+                  filterOption={(inputValue, option) =>
+                    option
+                      ? option.label
+                          .toLowerCase()
+                          .includes(inputValue.toLowerCase())
+                      : false
+                  }
+                />
               </Form.Item>
             </Col>
 
